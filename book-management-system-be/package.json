@@ -1,0 +1,17 @@
+{
+  "name": "books-management-system-be",
+  "version": "1.0.0",
+  "description": "毕业设计-图书管理系统服务端",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "毕业设计"
+  ],
+  "author": "threey333",
+  "license": "ISC",
+  "dependencies": {
+    "koa": "^2.13.4"
+  }
+}
