@@ -1,0 +1,42 @@
+/*
+  公共样式部分
+  @extend 即继承
+*/
+
+// 不超过一行，超出位置以省略号的形式显示：
+.ellipsis {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.ellipsis-x {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+}
+
+// 不超过两行，超出位置以省略号的形式显示：
+.ellipsis-2 {
+  @extend .ellipsis-x;
+  -webkit-line-clamp: 2;
+}
+
+// 不超过三行，超出位置以省略号的形式显示：
+.ellipsis-3 {
+  @extend .ellipsis-x;
+  -webkit-line-clamp: 3;
+}
+
+// 不超过四行，超出位置以省略号的形式显示：
+.ellipsis-4 {
+  @extend .ellipsis-x;
+  -webkit-line-clamp: 4;
+}
+
+// .red-color {
+//   background-color: red;
+// }

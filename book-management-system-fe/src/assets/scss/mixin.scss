@@ -1,0 +1,16 @@
+/**
+  mixin这个文件专门定义公共css函数、和代码块
+
+*/
+
+// 垂直轴上居中
+@mixin flex-align-center() {
+  display: flex;
+  align-items: center;
+}
+
+// 采用flex布局的水平垂直居中
+@mixin flex-center() {
+  @include flex-align-center();
+  justify-content: center;
+}
