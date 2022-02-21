@@ -1,16 +1,41 @@
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
-    <h3>Installed CLI Plugins</h3>
+    <h1>wadsdklasjldjasljdlsja</h1>
+    <button @click="show">点击</button>
   </div>
 </template>
 
 <script>
+// import { getCurrentInstance } from 'vue'
 export default {
+  // setup (props, cxt) {
+  //   const currentInstance = getCurrentInstance()
+  //   const { $service } = currentInstance.appContext.config.globalProperties
+
+  //   async function show () {
+  //     console.log($service.auth.songURL)
+  //     console.log($service.songURL)
+  //     // const res = await $service.getSongURL({ songID: 405998841 })
+  //     // console.log(res)
+  //   }
+  //   return {
+  //     show
+  //   }
+  // }
+  // // 方法一 end
+
   name: 'HelloWorld',
   props: {
     msg: String
+  },
+  methods: {
+    async show () {
+      const id = 405998841
+      const res = await this.$service.auth.getSongURL({ songID: id })
+      console.log(res)
+    }
   }
+
 }
 </script>
 

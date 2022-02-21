@@ -1,8 +1,20 @@
 <template>
-  <div id="nav">
+  <div class="nav">
     <h1>Vue3-图书管理系统</h1>
+    <hello/>
   </div>
+  <router-view />
 </template>
+
+<script>
+import Hello from '@/components/HelloWorld.vue'
+
+export default {
+  components: {
+    Hello
+  }
+}
+</script>
 
 <style lang="scss">
 #app {
@@ -13,16 +25,13 @@
   color: #2c3e50;
 }
 
-#nav {
+.nav {
   padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
+  &-box {
+    @include flex-center();
+    width: 400px;
+    height: 400px;
+    background-color: #eee;
   }
 }
 </style>
