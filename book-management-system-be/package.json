@@ -12,6 +12,7 @@
   "author": "threey333",
   "license": "ISC",
   "dependencies": {
-    "koa": "^2.13.4"
+    "koa": "^2.13.4",
+    "mongoose": "^5.10.11"
   }
 }
