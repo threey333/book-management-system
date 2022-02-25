@@ -12,7 +12,10 @@
   "author": "threey333",
   "license": "ISC",
   "dependencies": {
+    "@koa/cors": "^3.1.0",
+    "@koa/router": "^10.1.1",
     "koa": "^2.13.4",
+    "koa-body": "^4.2.0",
     "mongoose": "^5.10.11"
   }
 }

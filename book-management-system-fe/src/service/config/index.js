@@ -23,10 +23,10 @@ const transformRequest = function (data, headers) {
 }
 
 // 设置请求超时的时间
-const timeout = 8000
+const timeout = 10 * 1000
 
 // withCredentials 表示跨域请求时是否需要使用凭证。
-const withCredentials = true
+const withCredentials = false // 默认不使用凭证
 
 // validateStatus 定义对于给定的 HTTP 响应状态码是 resolve还是 reject.
 const validateStatus = function (status) {
@@ -110,6 +110,7 @@ export default function $axios (config = {}) {
 
         // 检查我们是否已达到重试总数
         if (config.__retryCount >= config.retry) {
+          error.message = '请求超时'
           // 拒绝错误
           return Promise.reject(error)
         }

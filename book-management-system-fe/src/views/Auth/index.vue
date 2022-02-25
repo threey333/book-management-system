@@ -7,6 +7,7 @@
     </div>
     <div class="auth-wrapper-form">
       <a-tabs>
+        <!-- 登录 -->
         <a-tab-pane key="login" tab="登入">
           <div class="auth-wrapper-form-item">
             <a-input size="large" placeholder="账户">
@@ -28,16 +29,17 @@
           </div>
           <a-button size="large" class="auth-wrapper-form-btn" type="primary">登入</a-button>
         </a-tab-pane>
+        <!-- 注册 -->
         <a-tab-pane key="register" tab="注册">
           <div class="auth-wrapper-form-item">
-            <a-input size="large" placeholder="账户">
+            <a-input v-model:value="registerForm.account" size="large" placeholder="账户">
               <template #prefix>
                 <UserOutlined />
               </template>
             </a-input>
           </div>
           <div class="auth-wrapper-form-item">
-            <a-input size="large" placeholder="密码">
+            <a-input v-model:value="registerForm.password" size="large" placeholder="密码">
               <template #prefix>
                 <LockOutlined />
               </template>
@@ -50,7 +52,7 @@
               </template>
             </a-input>
           </div>
-          <a-button size="large" class="auth-wrapper-form-btn" type="primary">注册</a-button>
+          <a-button class="auth-wrapper-form-btn" type="primary" size="large" @click="register">注册</a-button>
         </a-tab-pane>
       </a-tabs>
     </div>
@@ -58,8 +60,10 @@
 </template>
 
 <script>
-import { defineComponent } from 'vue'
+import { defineComponent, reactive } from 'vue'
 import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons-vue'
+import { vueProperties } from '@/utils'
+
 export default defineComponent({
   components: {
     UserOutlined,
@@ -67,7 +71,41 @@ export default defineComponent({
     MailOutlined
   },
   setup () {
-    return {}
+    const { $service } = vueProperties()
+    // 注册数据
+    const registerForm = reactive({
+      account: '',
+      password: ''
+    })
+    // 注册数据逻辑
+    const register = async () => {
+      const res = await $service.auth.register(registerForm)
+      console.log(res)
+      if (res.code) {
+        console.log('注册成功')
+        registerForm.account = ''
+        registerForm.password = ''
+      }
+    }
+    // 登录数据
+    const loginForm = reactive({
+      account: '',
+      password: ''
+    })
+    // 登录数据逻辑
+    const login = async () => {
+      const res = await $service.auth.login(loginForm)
+      console.log(res)
+      if (res.code) {
+        console.log('登录成功')
+      }
+    }
+    return {
+      registerForm,
+      register,
+      loginForm,
+      login
+    }
   }
 })
 </script>

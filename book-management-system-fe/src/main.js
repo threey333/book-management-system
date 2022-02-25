@@ -12,7 +12,7 @@ import '@/assets/scss/index.scss'
 const app = createApp(App)
 app.use(AntUI).use(Tabs)
 
-/* 在app的原型上挂载service */
+/** 在app的原型上挂载service模块 */
 app.config.globalProperties.$service = service
 
 app.use(store).use(router).mount('#app')
