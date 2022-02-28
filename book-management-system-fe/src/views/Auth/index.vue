@@ -10,7 +10,7 @@
         <!-- 登录 -->
         <a-tab-pane key="login" tab="登入">
           <div class="auth-wrapper-form-item">
-            <a-input size="large" placeholder="账户">
+            <a-input size="large" placeholder="账户" v-model:value="loginForm.account">
               <!-- 插槽 -->
               <template #prefix>
                 <UserOutlined />
@@ -18,7 +18,7 @@
             </a-input>
           </div>
           <div class="auth-wrapper-form-item">
-            <a-input size="large" placeholder="密码">
+            <a-input size="large" placeholder="密码" v-model:value="loginForm.password">
               <template #prefix>
                 <LockOutlined />
               </template>
@@ -27,7 +27,7 @@
           <div class="auth-wrapper-form-item">
             <a href>忘记密码</a>
           </div>
-          <a-button size="large" class="auth-wrapper-form-btn" type="primary">登入</a-button>
+          <a-button size="large" class="auth-wrapper-form-btn" type="primary" @click="login">登入</a-button>
         </a-tab-pane>
         <!-- 注册 -->
         <a-tab-pane key="register" tab="注册">
@@ -46,7 +46,7 @@
             </a-input>
           </div>
           <div class="auth-wrapper-form-item">
-            <a-input size="large" placeholder="邀请码">
+            <a-input size="large" placeholder="邀请码" v-model:value="registerForm.inviteCode">
               <template #prefix>
                 <MailOutlined />
               </template>
@@ -62,7 +62,8 @@
 <script>
 import { defineComponent, reactive } from 'vue'
 import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons-vue'
-import { vueProperties } from '@/utils'
+import { vueProperties, result } from '@/utils'
+import { message } from 'ant-design-vue'
 
 export default defineComponent({
   components: {
@@ -75,18 +76,34 @@ export default defineComponent({
     // 注册数据
     const registerForm = reactive({
       account: '',
-      password: ''
+      password: '',
+      inviteCode: ''
     })
     // 注册数据逻辑
     const register = async () => {
+      const { account, password, inviteCode } = registerForm
+      if (account === '') {
+        message.info('请输入账户')
+        return
+      } else if (password === '') {
+        message.info('请输入密码')
+        return
+      } else if (inviteCode === '') {
+        message.info('请输入邀请码')
+      } else if (!(/[0-9A-Za-z]{5,13}/.test(account))) {
+        message.info('请输入正确的账户和密码')
+        return
+      }
       const res = await $service.auth.register(registerForm)
       console.log(res)
-      if (res.code) {
-        console.log('注册成功')
+      result(res).success((msg) => {
         registerForm.account = ''
         registerForm.password = ''
-      }
+        registerForm.inviteCode = ''
+        message.success(msg)
+      })
     }
+
     // 登录数据
     const loginForm = reactive({
       account: '',
@@ -94,11 +111,22 @@ export default defineComponent({
     })
     // 登录数据逻辑
     const login = async () => {
-      const res = await $service.auth.login(loginForm)
-      console.log(res)
-      if (res.code) {
-        console.log('登录成功')
+      const { account, password } = loginForm
+      if (account === '') {
+        message.info('请输入账户')
+        return
       }
+      if (password === '') {
+        message.info('请输入密码')
+        return
+      }
+      const res = await $service.auth.login(loginForm)
+      result(res)
+        .success((msg) => {
+          loginForm.account = ''
+          loginForm.password = ''
+          message.success(msg)
+        })
     }
     return {
       registerForm,
