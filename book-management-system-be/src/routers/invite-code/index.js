@@ -10,7 +10,7 @@ const router = new Router({
 })
 
 
-router.post('/add', async (ctx, next) => {
+router.get('/add', async (ctx, next) => {
   const code = InviteCode({
     code: uuidv4(),
     user: '',

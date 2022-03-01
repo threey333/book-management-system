@@ -16,6 +16,8 @@ const router = new Router({
 */
 router.post('/register', async (ctx, next) => {
   const { account, password, inviteCode } = getBody(ctx)
+  // console.log(ctx)
+  // console.log(account, password, inviteCode)
   // 检查账户和密码
   if (account === '' || password === '' || inviteCode === '') {
     ctx.response.body = {
