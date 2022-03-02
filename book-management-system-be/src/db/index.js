@@ -1,5 +1,6 @@
 require('./schemas/User') // 执行User文件
 require('./schemas/InviteCode') // 执行InviteCode文件
+require('./schemas/Book') // 执行Book文件
 
 const mongoose = require('mongoose')
 
