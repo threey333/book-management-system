@@ -6,7 +6,7 @@
         <span>图书管理系统</span>
       </div>
       <div class="default-layout-header-right">
-        <div class="default-layout-header-right-message">你好，xxx</div>
+        <span class="default-layout-header-right-message">你好，xxx</span>
         <button class="el-btn el-btn-primary btn">退出</button>
       </div>
     </div>
@@ -16,7 +16,6 @@
         <LayoutLeftNav />
       </section>
       <section class="default-layout-content-right">
-        right
         <router-view />
       </section>
     </article>

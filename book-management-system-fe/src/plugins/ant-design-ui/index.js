@@ -3,9 +3,9 @@
  * 对于这些组件我们是不能使用app.component()进行注册的，而是使用app.use()形式。
 */
 
-import { Button, Input } from 'ant-design-vue'
+import { Button, Card, Divider } from 'ant-design-vue'
 
-const components = [Button, Input]
+const components = [Button, Card, Divider]
 const AntUI = {
   install: (app, options) => {
     components.forEach(component => {
