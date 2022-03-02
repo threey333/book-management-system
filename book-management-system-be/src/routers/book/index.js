@@ -21,7 +21,7 @@ router.post('/add', async (ctx, next) => {
 })
 
 // 获取图书列表的接口
-router.add('/list', async (ctx, next) => {
+router.get('/list', async (ctx, next) => {
   const list = await Book.find({}).exec() //获取books集合下的所有文档数据
   ctx.response.body = {
     code: 1,
