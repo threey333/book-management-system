@@ -1,7 +1,7 @@
 const Router = require('@koa/router')
 const mongoose = require('mongoose')
 const jwt = require('jsonwebtoken')
-const { getBody } = require('../../utils')
+const { getBody } = require('../../common/utils')
 const { getSecretKey } = require('../../secret-key')
 
 const User = mongoose.model('User')  //获取users集合

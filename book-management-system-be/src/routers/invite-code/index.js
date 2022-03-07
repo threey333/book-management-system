@@ -1,7 +1,7 @@
 const Router = require('@koa/router')
 const mongoose = require('mongoose')
 const { v4: uuidv4 } = require('uuid')
-const { getBody } = require('../../utils')
+const { getBody } = require('../../common/utils')
 
 const InviteCode = mongoose.model('InviteCode')  //获取invitecode集合
 

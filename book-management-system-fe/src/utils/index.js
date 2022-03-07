@@ -1,2 +1,2 @@
 export { vueProperties } from './vue-global-property'
-export { result } from './handle'
+export { result, clone, formatTimestamp } from './handle'

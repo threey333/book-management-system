@@ -1,54 +1,254 @@
 <template>
-  <div>
+  <div class="books-wrapper">
     <a-card>
       <h2>图书列表</h2>
       <a-divider />
-      <spaces-between>
-        <a-input-search class="search" placeholder="根据书名搜索" enter-button />
-        <a-button>添加一条</a-button>
-      </spaces-between>
+      <space-between class="books-wrapper-operation">
+        <div class="search">
+          <a-input-search
+            class="search"
+            placeholder="根据书名搜索"
+            v-model:value="keyword"
+            enter-button
+            @search="onSearch"
+          />
+          <a v-if="isBack" href="javascript:;" @click="backAll">返回</a>
+        </div>
+        <a-button @click="show = true">添加一条</a-button>
+      </space-between>
       <a-divider />
 
       <!-- 表格 -->
-      <a-table :columns="columns" :data-source="dataSource"></a-table>
+      <a-table :columns="columns" :data-source="listData" :pagination="false">
+        <template #publishDate="data">{{ formatTimestamp(data.record.publishDate) }}</template>
+        <template #count="data">
+          <a href="javascript:;" @click="updateCount('IN_COUNT', data.record)">入库</a>
+          {{ data.record.count }}
+          <a
+            href="javascript:;"
+            @click="updateCount('OUT_COUNT', data.record)"
+          >出库</a>
+        </template>
+        <template #actions="data">
+          <a href="javascript:;" @click="update(data)">编辑</a>
+          &nbsp;
+          <a href="javascript:;" @click="removeItem(data)">删除</a>
+        </template>
+      </a-table>
+      <space-between class="books-wrapper-pagination">
+        <div />
+        <!-- 分页 -->
+        <a-pagination
+          v-model:current="curPage"
+          :pageSize="pageSize"
+          :total="total"
+          @change="setCurPage"
+        />
+      </space-between>
     </a-card>
+    <AddOne v-model:show="show" />
+    <Update v-model:show="showUpdateDialog" :book="curEditBook" @update="updateCurBook"></Update>
   </div>
 </template>
 
 <script>
-import { defineComponent } from 'vue'
-
-const columns = [
-  {
-    title: '名字',
-    key: 'name',
-    dataIndex: 'name'
-  },
-  {
-    title: '年龄',
-    key: 'age',
-    dataIndex: 'age'
-  }
-]
-
-const data = [
-  {
-    key: '1',
-    name: '小杨',
-    age: 18
-  },
-  {
-    key: '2',
-    name: '小p',
-    age: 20
-  }
-]
+import { defineComponent, ref, onMounted } from 'vue'
+import { vueProperties, result, formatTimestamp } from '@/utils'
+import AddOne from './components/add-one.vue'
+import Update from './components/update.vue'
+import { message, Input } from 'ant-design-vue'
+import ElDialog from '@/components/dialog/index.vue'
 
 export default defineComponent({
+  name: 'Books',
+  components: {
+    AddOne,
+    Update
+  },
   setup () {
+    const columns = [
+      {
+        title: '书名',
+        key: 'name',
+        dataIndex: 'name'
+      },
+      {
+        title: '作者',
+        key: 'auth',
+        dataIndex: 'auth'
+      },
+      {
+        title: '价格',
+        key: 'price',
+        dataIndex: 'price'
+      },
+      {
+        title: '库存',
+        key: 'count',
+        dataIndex: 'count',
+        slots: {
+          customRender: 'count'
+        }
+      },
+      {
+        title: '出版日期',
+        key: 'publishDate',
+        dataIndex: 'publishDate',
+        slots: {
+          customRender: 'publishDate'
+        }
+      },
+      {
+        title: '分类',
+        key: 'classify',
+        dataIndex: 'classify'
+      },
+      {
+        title: '操作',
+        key: 'actions',
+        dataIndex: 'actions',
+        slots: {
+          customRender: 'actions'
+        }
+      }
+    ]
+    const { $service } = vueProperties()
+    const show = ref(false)
+    const showUpdateDialog = ref(false)
+    const listData = ref([]) // 图书列表数量
+    const total = ref(0) // 图书类总条数
+    const curPage = ref(1) // 当前页数
+    const pageSize = ref(4) // 当前页有多少条数据
+    const keyword = ref('') // 搜索的关键词
+    const isBack = ref('')
+
+    const getList = async ({ page } = {}) => {
+      const res = await $service.book.getList({
+        page: page || curPage.value,
+        size: pageSize.value,
+        keyword: keyword.value
+      })
+      result(res).success((msg, { data }) => {
+        listData.value = data.list.map((item) => {
+          item.key = item._id
+          return item
+        })
+        total.value = data.total
+        pageSize.value = Number(data.size)
+        message.success(msg)
+      })
+    }
+
+    onMounted(async () => {
+      getList()
+    })
+
+    // 设置当前页码
+    const setCurPage = (page) => {
+      curPage.value = page
+      getList()
+    }
+
+    // 搜索
+    const onSearch = () => {
+      keyword.value = keyword.value.replace(/(^\s*) | (\s*$)/g, '')
+      if (!keyword.value) {
+        keyword.value = ''
+        return
+      }
+      getList()
+      isBack.value = !!keyword.value
+    }
+
+    // 返回搜索之前的结果
+    const backAll = () => {
+      keyword.value = ''
+      isBack.value = false
+      getList()
+    }
+
+    // 删除某一本图书信息记录
+    const removeItem = async ({ record }) => {
+      const { _id } = record
+      const res = await $service.book.remove(_id)
+      console.log(res)
+      result(res).success((msg, { data: { total: t } }) => {
+        message.success(msg)
+        const idx = listData.value.findIndex((item) => item._id === _id)
+        const remain = t % pageSize.value
+        if (remain === 0) {
+          const newCurPage = t / pageSize.value
+          console.log(newCurPage)
+          getList({
+            page: newCurPage
+          })
+        } else {
+          listData.value.splice(idx, 1)
+        }
+      })
+    }
+
+    // 修改图书库存
+    const updateCount = (type, record) => {
+      const word = type === 'OUT_COUNT' ? '减少' : '增加'
+
+      ElDialog.confirm({
+        title: `要${word}多少库存`,
+        content: (
+          <div>
+            <Input type="text" class="__book_input_count" />
+          </div>
+        ),
+        onOk: async () => {
+          const el = document.querySelector('.__book_input_count')
+          let num = el.value
+          const res = await $service.book.updateCount({
+            id: record._id,
+            type,
+            num
+          })
+          result(res)
+            .success((msg, data) => {
+              num = type === 'OUT_COUNT' ? -Math.abs(num) : Math.abs(num)
+              const one = listData.value.find(item => item._id === record._id)
+              one.count = one.count + num
+              message.success((`成功${word} ${Math.abs(num)} 本书`))
+            })
+        }
+      })
+    }
+
+    // 编辑图书内容
+    const curEditBook = ref({})
+    const update = ({ record }) => {
+      showUpdateDialog.value = true
+      curEditBook.value = record
+    }
+
+    const updateCurBook = (newData) => {
+      Object.assign(curEditBook.value, newData)
+    }
+
     return {
       columns,
-      dataSource: data
+      show,
+      listData,
+      formatTimestamp,
+      curPage,
+      pageSize,
+      total,
+      keyword,
+      isBack,
+      showUpdateDialog,
+      curEditBook,
+
+      setCurPage,
+      onSearch,
+      backAll,
+      removeItem,
+      updateCount,
+      update,
+      updateCurBook
     }
   }
 })
@@ -56,7 +256,21 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+.books-wrapper {
+  &-pagination {
+    margin-top: 24px;
+  }
+}
 .search {
-  width: 200px;
+  display: flex;
+  align-items: center;
+  // width: 300px;
+  min-width: 244px;
+  max-width: 244px;
+  a {
+    display: block;
+    margin-left: 16px;
+    min-width: 40px;
+  }
 }
 </style>

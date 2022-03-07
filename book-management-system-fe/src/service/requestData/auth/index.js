@@ -2,32 +2,32 @@ import httpRequest from '../../config'
 // import { handleLearningRequest } from '../../utils'
 class Auth {
   constructor () {
-    this.songURL = 'https://netease-cloud-music-api-coral-eight.vercel.app'
-    this.authURL = 'http://localhost:9090'
+    this.authURL = 'http://localhost:9090/auth'
+    this.withCredentials = true
   }
 
   // 注册
   async register ({ account, password, inviteCode } = {}) {
-    const url = `${this.authURL}/auth/register`
+    const url = `${this.authURL}/register`
     const method = 'POST'
     const data = {
       account,
       password,
       inviteCode
     }
-    const withCredentials = true
+    const withCredentials = this.withCredentials
     return await httpRequest({ url, data, method, withCredentials })
   }
 
   // 登录
   async login ({ account, password } = {}) {
-    const url = `${this.authURL}/auth/login`
+    const url = `${this.authURL}/login`
     const method = 'POST'
     const data = {
       account,
       password
     }
-    const withCredentials = true
+    const withCredentials = this.withCredentials
     return await httpRequest({ url, data, method, withCredentials })
   }
 }

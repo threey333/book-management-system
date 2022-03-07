@@ -1,6 +1,7 @@
 const Router = require('@koa/router')
 const mongoose = require('mongoose')
-const { getBody } = require('../../utils')
+const { getBody } = require('../../common/utils')
+const { BOOK_CONST } = require('../../common/constant')
 
 const Book = mongoose.model('Book')  //创建一个books集合构造函数
 
@@ -10,8 +11,8 @@ const router = new Router({
 
 // 添加图书的接口
 router.post('/add', async (ctx, next) => {
-  const { name, price, auth, publishDate, classify } = getBody(ctx)
-  const book = new Book({ name, price, auth, publishDate, classify })
+  const { name, price, auth, publishDate, classify, count } = getBody(ctx)
+  const book = new Book({ name, price, auth, publishDate, classify, count })
   const res = await book.save()
   ctx.response.body = {
     code: 1,
@@ -22,12 +23,127 @@ router.post('/add', async (ctx, next) => {
 
 // 获取图书列表的接口
 router.get('/list', async (ctx, next) => {
-  const list = await Book.find({}).exec() //获取books集合下的所有文档数据
+  const { page = 1, size = 3, keyword } = ctx.query
+  const defaultQuery = {}
+  // 利用$regex进行模糊匹配
+  keyword ? defaultQuery.name = { $regex: new RegExp(keyword) } : defaultQuery
+
+  const list = await Book
+    .find(defaultQuery)
+    .skip((page - 1) * size)
+    .limit(Number(size))
+    .exec()
+
+  const total = await Book.countDocuments() //books集合下总条文档数
+
   ctx.response.body = {
     code: 1,
     msg: '获取列表数据成功',
-    data: list
+    data: {
+      list,
+      total,
+      page,
+      size
+    }
   }
+})
+
+// 删除某本图书信息
+router.delete('/:id', async (ctx, next) => {
+  const { id } = ctx.params
+
+  const delMsg = await Book.deleteOne({
+    _id: id
+  })
+  const total = await Book.countDocuments() //获取删除后,books集合下总条文档数
+  const { ok } = delMsg //去除删除后的状态
+  if (ok) {
+    ctx.response.body = {
+      code: 1,
+      msg: '删除成功',
+      data: {
+        total,
+        delMsg
+      }
+    }
+  }
+})
+
+// 入库出库
+router.post('/update/count', async (ctx, next) => {
+  const {
+    id,
+    type // 类型判断是入库还是出库
+  } = ctx.request.body
+  let { num } = ctx.request.body
+  num = Number(num)
+
+  const findABook = await Book.findOne({
+    _id: id
+  }).exec()
+  if (!findABook) {
+    ctx.response.body = {
+      code: 0,
+      msg: '没有找到书籍'
+    }
+    return
+  }
+
+  // 如果找到，则判断是入库还是出库
+  type === BOOK_CONST.IN ? num = Math.abs(num) : num = -Math.abs(num)
+  findABook.count = findABook.count + num
+
+  if (findABook.count < 0) {
+    ctx.response.body = {
+      code: 0,
+      msg: '剩下的量不足以出库',
+    }
+    return
+  }
+  const res = await findABook.save()
+  ctx.response.body = {
+    code: 1,
+    msg: '操作成功',
+    data: res
+  }
+})
+
+router.post('/update', async (ctx, next) => {
+  const {
+    id,
+    ...args
+  } = getBody(ctx)
+
+  const one = await Book.findOne({
+    _id: id
+  }).exec()
+
+  if (!one) {
+    // 没找到书
+    ctx.response.body = {
+      code: 0,
+      msg: '没有找到书籍'
+    }
+    return
+  }
+
+  // 找到书则更新修改过的内容
+  const newQuery = {}
+  Object.entries(args).forEach(([key, value]) => {
+    if (value) newQuery[key] = value
+  })
+  Object.assign(one, newQuery)
+
+  // 修改过的内容保存到数据库中
+  const res = await one.save()
+  if (res) {
+    ctx.response.body = {
+      data: res,
+      code: 1,
+      msg: '保存成功'
+    }
+  }
+
 })
 
 module.exports = router

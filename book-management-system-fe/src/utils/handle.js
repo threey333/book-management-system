@@ -40,3 +40,22 @@ export const result = (resultData, authShowErrorMsg = true) => {
     }
   }
 }
+
+export const clone = (target) => {
+  return JSON.parse(JSON.stringify(target))
+}
+
+export const formatTimestamp = (ts) => {
+  if (!ts) return ''
+  const date = new Date(Number(ts))
+
+  const YYYY = date.getFullYear()
+  const MM = date.getMonth() + 1
+  const DD = date.getDate()
+
+  const hh = date.getHours()
+  const mm = date.getMinutes()
+  const ss = date.getSeconds()
+
+  return `${YYYY}/${MM}/${DD}  ${hh}:${mm}:${ss}`
+}

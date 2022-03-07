@@ -1,3 +1,4 @@
+const webpack = require('webpack')
 module.exports = {
   assetsDir: 'static', // 放置静态资源的目录
   css: {
@@ -19,6 +20,12 @@ module.exports = {
       }
 
     }
+  },
+  configureWebpack: {
+    plugins: [
+      // 忽略moment.js的所有locale文件
+      new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
+    ]
   }
 
 }
