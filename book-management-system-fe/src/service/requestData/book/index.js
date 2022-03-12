@@ -57,6 +57,11 @@ class Book {
     const method = 'POST'
     return await httpRequest({ url, data, method })
   }
+
+  async detail (id) {
+    const url = `${this.bookURL}/detail/${id}`
+    return await httpRequest({ url })
+  }
 }
 
 export default new Book()

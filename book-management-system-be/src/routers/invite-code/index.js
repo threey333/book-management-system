@@ -11,11 +11,13 @@ const router = new Router({
 
 
 router.get('/add', async (ctx, next) => {
-  const code = InviteCode({
+  const code = new InviteCode({
     code: uuidv4(),
     user: '',
   })
+
   const saved = await code.save() //保存到数据库中
+
   ctx.response.body = {
     code: 1,
     data: saved,

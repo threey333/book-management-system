@@ -47,6 +47,8 @@ export const clone = (target) => {
 
 export const formatTimestamp = (ts) => {
   if (!ts) return ''
+
+  const addZero = (val) => (val >= 10 ? val : `0${val}`)
   const date = new Date(Number(ts))
 
   const YYYY = date.getFullYear()
@@ -57,5 +59,5 @@ export const formatTimestamp = (ts) => {
   const mm = date.getMinutes()
   const ss = date.getSeconds()
 
-  return `${YYYY}/${MM}/${DD}  ${hh}:${mm}:${ss}`
+  return `${YYYY}/${addZero(MM)}/${addZero(DD)} ${addZero(hh)}:${addZero(mm)}:${addZero(ss)}`
 }

@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { defineComponent, reactive, watch } from 'vue'
+import { defineComponent, ref, reactive, watch } from 'vue'
 import moment from 'moment'
 import { vueProperties, result } from '@/utils'
 import { message } from 'ant-design-vue'
@@ -54,16 +54,22 @@ export default defineComponent({
       publishDate: null,
       classify: ''
     })
+    const oldBookName = ref('')
 
     watch(() => props.book, (current) => {
-      console.log(current)
+      oldBookName.value = current.name
       Object.assign(editForm, current)
       editForm.publishDate = moment(Number(editForm.publishDate))
     })
 
     const submit = async () => {
-      console.log('提交')
-      console.log(editForm)
+      if (oldBookName.value !== editForm.name) {
+        // 修改出入库日志中的图书名字
+        $service.inventoryLog.updateLogBookName({
+          oldBookName: oldBookName.value,
+          newBookName: editForm.name
+        })
+      }
       const res = await $service.book.update({
         id: props.book._id,
         name: editForm.name,
@@ -74,7 +80,6 @@ export default defineComponent({
       })
       result(res)
         .success((msg, { data }) => {
-          console.log(data)
           context.emit('update', data)
           message.success(msg)
           close()

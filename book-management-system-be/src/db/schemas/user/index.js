@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const { getMeta } = require('../../helper.js')
+const { getMeta, preSave } = require('../../helper.js')
 
 /**
  * Schema 映射了MongoDB下的一个集合，并且它的内容就是集合下文档的构成。
@@ -12,6 +12,8 @@ const UserSchema = new mongoose.Schema({
   password: String,
   meta: getMeta()
 })
+
+UserSchema.pre('save', preSave)
 
 mongoose.model('User', UserSchema)
 

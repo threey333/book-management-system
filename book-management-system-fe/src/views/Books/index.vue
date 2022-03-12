@@ -6,7 +6,6 @@
       <space-between class="books-wrapper-operation">
         <div class="search">
           <a-input-search
-            class="search"
             placeholder="根据书名搜索"
             v-model:value="keyword"
             enter-button
@@ -19,7 +18,7 @@
       <a-divider />
 
       <!-- 表格 -->
-      <a-table :columns="columns" :data-source="listData" :pagination="false">
+      <a-table :columns="columns" :data-source="listData" :pagination="false" bordered>
         <template #publishDate="data">{{ formatTimestamp(data.record.publishDate) }}</template>
         <template #count="data">
           <a href="javascript:;" @click="updateCount('IN_COUNT', data.record)">入库</a>
@@ -30,6 +29,8 @@
           >出库</a>
         </template>
         <template #actions="data">
+          <a href="javascript:;" @click="toDetail(data)">详情</a>
+          &nbsp;
           <a href="javascript:;" @click="update(data)">编辑</a>
           &nbsp;
           <a href="javascript:;" @click="removeItem(data)">删除</a>
@@ -53,6 +54,7 @@
 
 <script>
 import { defineComponent, ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { vueProperties, result, formatTimestamp } from '@/utils'
 import AddOne from './components/add-one.vue'
 import Update from './components/update.vue'
@@ -196,7 +198,7 @@ export default defineComponent({
         title: `要${word}多少库存`,
         content: (
           <div>
-            <Input type="text" class="__book_input_count" />
+            <Input type="number" class="__book_input_count" />
           </div>
         ),
         onOk: async () => {
@@ -218,15 +220,25 @@ export default defineComponent({
       })
     }
 
-    // 编辑图书内容
+    // 编辑图书内容数据
     const curEditBook = ref({})
+    // 编辑显示书籍的弹框
     const update = ({ record }) => {
       showUpdateDialog.value = true
       curEditBook.value = record
     }
 
+    // 更新列表某一行的数据
     const updateCurBook = (newData) => {
       Object.assign(curEditBook.value, newData)
+    }
+
+    const router = useRouter()
+    // 进入书籍的详情页
+    const toDetail = ({ record }) => {
+      const { _id } = record // 获取该书籍的_id
+      console.log(router)
+      router.push(`/books/${_id}`)
     }
 
     return {
@@ -248,7 +260,8 @@ export default defineComponent({
       removeItem,
       updateCount,
       update,
-      updateCurBook
+      updateCurBook,
+      toDetail
     }
   }
 })

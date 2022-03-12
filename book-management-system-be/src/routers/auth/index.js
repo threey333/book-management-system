@@ -16,8 +16,7 @@ const router = new Router({
 */
 router.post('/register', async (ctx, next) => {
   const { account, password, inviteCode } = getBody(ctx)
-  // console.log(ctx)
-  // console.log(account, password, inviteCode)
+
   // 检查账户和密码
   if (account === '' || password === '' || inviteCode === '') {
     ctx.response.body = {
@@ -27,6 +26,7 @@ router.post('/register', async (ctx, next) => {
     }
     return
   }
+
   // 先从数据库下的invitecodes集合下的文档进行查找，看是否有邀请码
   const findCode = await InviteCode.findOne({
     code: inviteCode

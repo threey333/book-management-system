@@ -4,6 +4,15 @@ const { getBody } = require('../../common/utils')
 const { BOOK_CONST } = require('../../common/constant')
 
 const Book = mongoose.model('Book')  //创建一个books集合构造函数
+const InventoryLog = mongoose.model('InventoryLog')
+
+const findBookOne = async (id) => {
+  const one = await Book.findOne({
+    _id: id
+  }).exec()
+
+  return one
+}
 
 const router = new Router({
   prefix: '/book'
@@ -12,8 +21,16 @@ const router = new Router({
 // 添加图书的接口
 router.post('/add', async (ctx, next) => {
   const { name, price, auth, publishDate, classify, count } = getBody(ctx)
-  const book = new Book({ name, price, auth, publishDate, classify, count })
+  const book = new Book({
+    name,
+    price,
+    auth,
+    publishDate,
+    classify,
+    count
+  })
   const res = await book.save()
+
   ctx.response.body = {
     code: 1,
     msg: '添加成功',
@@ -52,6 +69,10 @@ router.get('/list', async (ctx, next) => {
 router.delete('/:id', async (ctx, next) => {
   const { id } = ctx.params
 
+  // 从数据库中删除某本图书信息数据，建议先查找该图书进行信息核对，然后再进行删除
+  const findTargetBook = await findBookOne(id)
+  if (!findTargetBook && !(findTargetBook._id === id)) return
+
   const delMsg = await Book.deleteOne({
     _id: id
   })
@@ -74,13 +95,11 @@ router.post('/update/count', async (ctx, next) => {
   const {
     id,
     type // 类型判断是入库还是出库
-  } = ctx.request.body
+  } = getBody(ctx)
   let { num } = ctx.request.body
   num = Number(num)
 
-  const findABook = await Book.findOne({
-    _id: id
-  }).exec()
+  const findABook = await findBookOne(id)
   if (!findABook) {
     ctx.response.body = {
       code: 0,
@@ -101,6 +120,15 @@ router.post('/update/count', async (ctx, next) => {
     return
   }
   const res = await findABook.save()
+
+  const log = new InventoryLog({
+    type,
+    num: Math.abs(num),
+    name: res.name,
+  })
+  // 出入库操作记录在数据库中
+  log.save()
+
   ctx.response.body = {
     code: 1,
     msg: '操作成功',
@@ -114,9 +142,7 @@ router.post('/update', async (ctx, next) => {
     ...args
   } = getBody(ctx)
 
-  const one = await Book.findOne({
-    _id: id
-  }).exec()
+  const one = await findBookOne(id)
 
   if (!one) {
     // 没找到书
@@ -142,6 +168,27 @@ router.post('/update', async (ctx, next) => {
       code: 1,
       msg: '保存成功'
     }
+  }
+
+})
+
+router.get('/detail/:id', async (ctx, next) => {
+  const { id } = ctx.params
+  const one = await findBookOne(id)
+
+  if (!one) {
+    // 找不到书籍
+    ctx.response.body = {
+      code: 0,
+      msg: '没有找到书籍'
+    }
+    return
+  }
+  // 找到书籍
+  ctx.response.body = {
+    code: 1,
+    data: one,
+    msg: '查询成功'
   }
 
 })
