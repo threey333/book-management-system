@@ -21,11 +21,19 @@ class User {
     return await httpRequest({ url, method })
   }
 
-  async addUser ({ account, password }) {
+  /**
+   *
+   * @param {String} account 账户
+   * @param {String} password 密码
+   * @param {String} character 角色id
+   * @returns
+   */
+  async addUser ({ account, password, character }) {
     const url = `${this.userURL}/add`
     const data = {
       account,
-      password
+      password,
+      character
     }
     const method = 'POST'
     return await httpRequest({ url, method, data })
@@ -38,6 +46,23 @@ class User {
       id
     }
     return await httpRequest({ url, method, data })
+  }
+
+  // 修改角色
+  async editCharacter ({ character, userId }) {
+    const url = `${this.userURL}/update/character`
+    const data = {
+      character,
+      userId
+    }
+    const method = 'POST'
+    return await httpRequest({ url, data, method })
+  }
+
+  // 刷新获取用户信息
+  async getUserInfo () {
+    const url = `${this.userURL}/info`
+    return await httpRequest({ url })
   }
 }
 

@@ -7,15 +7,15 @@ const { getMeta, preSave } = require('../../helper.js')
  */
 
 // 这里相当于定义文档各数据的类型
-const UserSchema = new mongoose.Schema({
-  account: String,  // 账户
-  password: String,  // 密码
-  character: String, // 角色
+const CharacterSchema = new mongoose.Schema({
+  name: String,  // 标志是member还是admin管理员
+  title: String, // 文案，描述name中的属性，是成员还是管理员
+  power: Object, // 权限
 
   meta: getMeta()
 })
 
-UserSchema.pre('save', preSave)
+CharacterSchema.pre('save', preSave)
 
-mongoose.model('User', UserSchema)
+mongoose.model('Character', CharacterSchema)
 

@@ -2,9 +2,12 @@ require('./schemas/User') // 执行User文件
 require('./schemas/InviteCode') // 执行InviteCode文件
 require('./schemas/Book') // 执行Book文件
 require('./schemas/InventoryLog') // 执行InventoryLog文件
+require('./schemas/Character')
+require('./schemas/Log')
 
 const mongoose = require('mongoose')
 
+// 连接数据库方法
 const connect = () => {
   return new Promise((resolve, reject) => {
     // 连接数据库

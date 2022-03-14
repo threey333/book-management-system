@@ -4,8 +4,10 @@ const mongoose = require('mongoose')
 const config = require('../../project-config')
 
 const { getBody } = require('../../common/utils')
+const { verify, getToken } = require('../../common/token')
 
-const User = mongoose.model('User')  //获取users集合
+const User = mongoose.model('User')  // 获取users集合
+const Character = mongoose.model('Character') // 获取character集合
 
 const router = new Router({
   prefix: '/user'
@@ -73,11 +75,25 @@ router.post('/add', async (ctx, next) => {
   const {
     account,
     password,
+    character,
   } = getBody(ctx)
+
+  const _isFindCharacter = await Character.findOne({
+    _id: character
+  })
+  if (!_isFindCharacter) {
+    // 如果找到角色,则直接返回
+    ctx.response.body = {
+      code: 0,
+      msg: '出错了'
+    }
+    return
+  }
 
   const user = new User({
     account,
     password: password || config.DEFAULT_PASSWORD,
+    character
   })
   const res = await user.save()
 
@@ -117,6 +133,57 @@ router.post('/reset/password', async (ctx, next) => {
       account: res.account,
       _id: res._id
     }
+  }
+})
+
+// 修改角色
+router.post('/update/character', async (ctx, next) => {
+  const {
+    character,
+    userId,
+  } = getBody(ctx)
+
+  // 先查找是否有该角色
+  const _isFindCharacter = await Character.findOne({
+    _id: character,
+  }).exec()
+  if (!_isFindCharacter) {
+    ctx.response.body = {
+      code: 0,
+      msg: '出错啦',
+    }
+    return
+  }
+
+  // 查找用户
+  const user = await User.findOne({
+    _id: userId
+  }).exec()
+  if (!user) {
+    ctx.response.body = {
+      code: 0,
+      msg: '用户不存在',
+    }
+    return
+  }
+
+  user.character = character
+  const res = await user.save()
+  ctx.response.body = {
+    code: 1,
+    msg: '修改成功',
+    data: res
+  }
+})
+
+// 获取用户信息(认证体系)
+router.get('/info', async (ctx, next) => {
+  const token = getToken(ctx) // 获取token
+
+  ctx.response.body = {
+    code: 1,
+    msg: '获取成功',
+    data: await verify(token),
   }
 })
 

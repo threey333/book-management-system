@@ -25,6 +25,14 @@
       <div class="users-wrapper-table">
         <a-table bordered :pagination="false" :columns="columns" :data-source="list">
           <template #createdAt="{ record }">{{ formatTimestamp(record.meta.createdAt) }}</template>
+
+          <template #character="{ record }">
+            <a href="javascript:;" @click="onEdit(record)" style="display:inline-block">
+              <EditOutlined />
+            </a>
+            {{ getCharacterInfoById(record.character).title }}
+          </template>
+
           <template #actions="{ record }">
             <a href="javascript:;" @click="reset(record)">重置密码</a>
             &nbsp;
@@ -44,15 +52,33 @@
       </flex-end>
     </a-card>
     <AddOne v-model:show="showAddDialog" @getList="getUser" />
+    <!-- 添加角色对话框 -->
+    <el-dialog
+      title="添加角色"
+      :isCenter="false"
+      :show="showEditCharacterDialog"
+      @confirm-submission="submitUpdateCharacter"
+      @close-dialog="closeEditCharacter"
+    >
+      <a-select v-model:value="editForm.character" style="width:160px">
+        <a-select-option
+          v-for="item in characterInfo"
+          :key="item._id"
+          :value="item._id"
+        >{{ item.title }}</a-select-option>
+      </a-select>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { defineComponent, ref, onMounted } from 'vue'
+import { defineComponent, ref, onMounted, reactive } from 'vue'
 import FlexEnd from '@/components/flex-end'
-import { vueProperties, result, formatTimestamp } from '@/utils'
+import { vueProperties, result, formatTimestamp, getCharacterInfoById } from '@/utils'
 import { message } from 'ant-design-vue'
 import AddOne from './components/add-one.vue'
+import { EditOutlined } from '@ant-design/icons-vue'
+import store from '@/store'
 
 const columns = [
   {
@@ -69,6 +95,14 @@ const columns = [
     }
   },
   {
+    title: '角色',
+    key: 'character',
+    dataIndex: 'character',
+    slots: {
+      customRender: 'character'
+    }
+  },
+  {
     title: '操作',
     key: 'actions',
     dataIndex: 'actions',
@@ -82,7 +116,8 @@ export default defineComponent({
   name: 'Users',
   components: {
     FlexEnd,
-    AddOne
+    AddOne,
+    EditOutlined
   },
   setup () {
     const { $service } = vueProperties()
@@ -93,6 +128,11 @@ export default defineComponent({
     const showAddDialog = ref(false)
     const keyword = ref('') // 账户关键字
     const isBack = ref(false) // 搜索过后是否进行返回
+    const showEditCharacterDialog = ref(false)
+    const editForm = reactive({
+      character: '',
+      current: {}
+    })
 
     // 获取用户
     const getUser = async () => {
@@ -154,6 +194,35 @@ export default defineComponent({
       getUser()
     }
 
+    // 编辑角色
+    const onEdit = (record) => {
+      editForm.current = record
+      editForm.character = record.character
+
+      showEditCharacterDialog.value = true
+    }
+
+    // 提交修改角色
+    const submitUpdateCharacter = async () => {
+      const res = await $service.user.editCharacter({
+        character: editForm.character,
+        userId: editForm.current._id
+      })
+      result(res)
+        .success((msg) => {
+          message.success(msg)
+
+          // 根据对象的引用特性，修改一处，另一处也会跟着改变
+          editForm.current.character = editForm.character
+          showEditCharacterDialog.value = false
+        })
+    }
+
+    // 关闭编辑角色对话框
+    const closeEditCharacter = () => {
+      showEditCharacterDialog.value = false
+    }
+
     return {
       list,
       curPage,
@@ -163,6 +232,9 @@ export default defineComponent({
       showAddDialog,
       keyword,
       isBack,
+      showEditCharacterDialog,
+      editForm,
+      characterInfo: store.state.characterInfo,
 
       formatTimestamp,
       remove,
@@ -170,7 +242,11 @@ export default defineComponent({
       setPage,
       reset,
       onSearch,
-      backAll
+      backAll,
+      getCharacterInfoById,
+      onEdit,
+      submitUpdateCharacter,
+      closeEditCharacter
     }
   }
 })

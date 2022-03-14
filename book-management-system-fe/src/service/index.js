@@ -5,10 +5,12 @@ import auth from './requestData/Auth'
 import book from './requestData/Book'
 import inventoryLog from './requestData/InventoryLog'
 import user from './requestData/User'
+import character from './requestData/Character'
 
 export const service = {
   auth,
   book,
   inventoryLog,
-  user
+  user,
+  character
 }

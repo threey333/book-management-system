@@ -62,8 +62,11 @@
 <script>
 import { defineComponent, reactive } from 'vue'
 import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons-vue'
-import { vueProperties, result } from '@/utils'
+import { vueProperties, result, getCharacterInfoById } from '@/utils'
 import { message } from 'ant-design-vue'
+import store from '@/store'
+import { useRouter } from 'vue-router'
+import { setToken } from '@/utils/token'
 
 export default defineComponent({
   components: {
@@ -79,6 +82,8 @@ export default defineComponent({
       password: '',
       inviteCode: ''
     })
+    const router = useRouter()
+
     // 注册数据逻辑
     const register = async () => {
       const { account, password, inviteCode } = registerForm
@@ -122,9 +127,15 @@ export default defineComponent({
       }
       const res = await $service.auth.login(loginForm)
       result(res)
-        .success((msg) => {
+        .success((msg, { data: { user, token } }) => {
           loginForm.account = ''
           loginForm.password = ''
+
+          store.commit('setUserInfo', user)
+          store.commit('setUserCharacter', getCharacterInfoById(user.character))
+          setToken(token)
+
+          router.replace('/books')
           message.success(msg)
         })
     }

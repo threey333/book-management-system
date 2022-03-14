@@ -4,7 +4,7 @@ const { getBody } = require('../../common/utils')
 const { BOOK_CONST } = require('../../common/constant')
 
 const Book = mongoose.model('Book')  //创建一个books集合构造函数
-const InventoryLog = mongoose.model('InventoryLog')
+const InventoryLog = mongoose.model('InventoryLog') // 创建一个库存集合的构造函数
 
 const findBookOne = async (id) => {
   const one = await Book.findOne({

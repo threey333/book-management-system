@@ -1,7 +1,8 @@
 /* axios二次封装 */
 import axios from 'axios'
-import router from '@/router'
+// import router from '@/router'
 import qs from 'qs'
+import { getToken } from '@/utils/token'
 
 // 设置统一URL地址前缀 --- 看情况设置
 // const baseURL = 'https://netease-cloud-music-api-coral-eight.vercel.app/'
@@ -49,9 +50,9 @@ export default function $axios (config = {}) {
 
   /* 请求拦截器 */
   instance.interceptors.request.use(config => {
-    const token = localStorage.getItem('token')
+    const token = getToken()
     // 如果token存在
-    token && (config.headers.Authorization = token)
+    token && (config.headers.Authorization = `Bearer ${token}`)
     return config
   })
 
@@ -69,7 +70,7 @@ export default function $axios (config = {}) {
       switch (status) {
         case 401:
           error.message = '未授权，请登录'
-          router.push('/auth')
+          // router.push('/auth')
           // 一般情况下都是未登录，此时在这里写路由跳转到登录页。
           break
         case 403:

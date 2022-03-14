@@ -2,7 +2,7 @@ const Router = require('@koa/router')
 const mongoose = require('mongoose')
 const jwt = require('jsonwebtoken')
 const { getBody } = require('../../common/utils')
-const { getSecretKey } = require('../../secret-key')
+const config = require('../../project-config')
 
 const User = mongoose.model('User')  //获取users集合
 const InviteCode = mongoose.model('InviteCode') // 获取invitecodes集合
@@ -86,17 +86,18 @@ router.post('/login', async (ctx, next) => {
       data: null
     }
   }
+
   // 检查是否有该用户
   const one = await User.findOne({ account }).exec()
   // 采用非对称加密，所以获取私钥
-  const privateKey = await getSecretKey('private')
+  const privateKey = config.JWT_PRIVATE_KEY
+
   if (!one) {
     ctx.response.body = {
       code: 0,
       msg: '用户名或密码错误',
       data: null,
     }
-    return
   } else {
     // 存在该用户
     const userData = {
@@ -109,8 +110,8 @@ router.post('/login', async (ctx, next) => {
         code: 1,
         msg: '登录成功',
         data: {
-          ...userData,
-          token: jwt.sign({ userData }, privateKey, { algorithm: 'RS256' })
+          user: userData,
+          token: jwt.sign(userData, privateKey, { algorithm: 'RS256' })
         }
       }
     } else {

@@ -2,34 +2,30 @@ const fs = require('fs')
 const path = require('path')
 
 let privateKey, publicKey
-const getSecretKey = async (type) => {
-  try {
-    return await new Promise((resolve, reject) => {
-      const filePath = path.join(__dirname, `./rsa_${type}_key.pem`)
-      fs.readFile(filePath, (err, data) => {
-        if (err) reject(new Error(err))
-        resolve(data)
-      })
-    })
-  } catch (error) {
-    console.log(error.message)
-  }
+
+// TODO 使用异步读取在其它地方会出现问题
+// const getSecretKey = (type) => {
+//   return new Promise((resolve, reject) => {
+//     const filePath = path.join(__dirname, `./rsa_${type}_key.pem`)
+//     fs.readFile(filePath, (err, data) => {
+//       if (err) reject(new Error(err))
+//       resolve(data)
+//     })
+//   })
+// }
+
+const getSecretKey = (type) => {
+  const filePath = path.join(__dirname, `./rsa_${type}_key.pem`)
+  return fs.readFileSync(filePath)
 }
 
-// 获取密钥
-// getSecretKey('private').then(res => {
-//   privateKey = res
-//   return getSecretKey('public')
-// }).then(res => {
-//   // 获取公钥
-//   publicKey = res
-// }).then(() => {
-//   console.log(publicKey)
-//   console.log(privateKey)
-// })
+privateKey = getSecretKey('private')
+publicKey = getSecretKey('public')
+
 
 module.exports = {
-  getSecretKey
+  privateKey,
+  publicKey
 }
 
 

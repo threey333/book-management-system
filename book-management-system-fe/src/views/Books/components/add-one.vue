@@ -67,8 +67,8 @@ export default defineComponent({
         })
     }
 
-    const close = (isClose) => {
-      context.emit('update:show', isClose)
+    const close = () => {
+      context.emit('update:show', false)
     }
 
     return {
