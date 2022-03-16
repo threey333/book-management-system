@@ -1,12 +1,13 @@
 const Router = require('@koa/router')
 const mongoose = require('mongoose')
 const { getBody } = require('../../common/utils')
+const config = require('../../project-config.js')
 
 const ForgetPassword = mongoose.model('ForgetPassword')  //获取invitecode集合
 const User = mongoose.model('User')
 
 const router = new Router({
-  prefix: '/forget-password'
+  prefix: '/reset-password'
 })
 
 // 获取忘记密码的信息列表
@@ -14,7 +15,7 @@ router.get('/list', async (ctx, next) => {
   let {
     page,
     size,
-  } = getBody(ctx)
+  } = ctx.query
 
   page = Number(page)
   size = Number(size)
@@ -28,7 +29,7 @@ router.get('/list', async (ctx, next) => {
     .limit(size)
     .exec()
 
-  const total = await forgetPasswordList.find({
+  const total = await ForgetPassword.find({
     status: 1,
   })
     .countDocuments()
@@ -36,7 +37,7 @@ router.get('/list', async (ctx, next) => {
 
   ctx.body = {
     code: 1,
-    msg: '获取列表成功',
+    msg: '获取重置密码列表成功',
     data: {
       list: forgetPasswordList,
       page,
@@ -71,6 +72,7 @@ router.post('/add', async (ctx, next) => {
     account,
     status: 1
   }).exec()
+
   if (one) {
     ctx.response.body = {
       code: 1,
@@ -84,15 +86,23 @@ router.post('/add', async (ctx, next) => {
     account,
     status: 1
   })
-  forgetPWD.save()
+
+  await forgetPWD.save()
+
+  ctx.body = {
+    code: 1,
+    msg: '申请成功啦',
+  };
 })
 
 // 更新处理的状态
 router.post('/update/status', async (ctx, next) => {
-  const {
+  let {
     id,
-    status,
+    status
   } = getBody(ctx)
+
+  status = Number(status)
 
   const one = await ForgetPassword.findOne({
     _id: id
@@ -107,6 +117,16 @@ router.post('/update/status', async (ctx, next) => {
 
   // status 可能会2 或者是 3.
   one.status = status
+  if (status === 2) {
+    const user = await User.findOne({
+      account: one.account
+    }).exec()
+
+    console.log(user)
+    if (!user) return
+    user.password = config.DEFAULT_PASSWORD
+    await user.save()
+  }
 
   await one.save()
 

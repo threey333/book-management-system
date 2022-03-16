@@ -25,7 +25,7 @@
             </a-input>
           </div>
           <div class="auth-wrapper-form-item">
-            <a href>忘记密码</a>
+            <a href="javascript:;" @click="forgetPassword">忘记密码</a>
           </div>
           <a-button size="large" class="auth-wrapper-form-btn" type="primary" @click="login">登入</a-button>
         </a-tab-pane>
@@ -63,10 +63,11 @@
 import { defineComponent, reactive } from 'vue'
 import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons-vue'
 import { vueProperties, result, getCharacterInfoById } from '@/utils'
-import { message } from 'ant-design-vue'
+import { message, Input } from 'ant-design-vue'
 import store from '@/store'
 import { useRouter } from 'vue-router'
 import { setToken } from '@/utils/token'
+import ElDialog from '@/components/dialog/index.vue'
 
 export default defineComponent({
   components: {
@@ -140,11 +141,34 @@ export default defineComponent({
           message.success(msg)
         })
     }
+
+    // 忘记密码
+    const forgetPassword = () => {
+      ElDialog.confirm({
+        title: '输入账户发起申请，管理员会审核',
+        content: (
+          <div>
+            <Input class="_forget-password_account" />
+          </div>
+        ),
+        onOk: async () => {
+          const el = document.querySelector('._forget-password_account')
+          const account = el && el.value
+          const res = await $service.resetPassword.addforgetPassword({ account })
+          result(res)
+            .success((msg) => {
+              message.success(msg)
+            })
+        }
+      })
+    }
+
     return {
       registerForm,
       register,
       loginForm,
-      login
+      login,
+      forgetPassword
     }
   }
 })

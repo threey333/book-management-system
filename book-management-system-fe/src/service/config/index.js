@@ -80,6 +80,7 @@ export default function $axios (config = {}) {
           // TODO 调整到登录页
           break
         case 404:
+          console.dir(error)
           error.message = `请求地址不存在: ${error.response.config.url}`
           // 一般情况下都是地址不存在。
           break

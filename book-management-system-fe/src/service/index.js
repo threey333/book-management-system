@@ -7,6 +7,7 @@ import inventoryLog from './requestData/InventoryLog'
 import user from './requestData/User'
 import character from './requestData/Character'
 import log from './requestData/Log'
+import resetPassword from './requestData/ResetPassword'
 
 export const service = {
   auth,
@@ -14,5 +15,6 @@ export const service = {
   inventoryLog,
   user,
   character,
-  log
+  log,
+  resetPassword
 }

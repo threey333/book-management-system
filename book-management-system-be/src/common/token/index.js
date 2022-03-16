@@ -38,7 +38,7 @@ const middleware = (app) => {
       /^\/auth\/login/,
       /^\/auth\/register/,
       /^\/character\/list/,
-      /^\/forget-password\/add/,
+      /^\/reset-password\/add/,
     ],
   }))
 }
