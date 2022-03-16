@@ -10,6 +10,7 @@ import log from './requestData/Log'
 import resetPassword from './requestData/ResetPassword'
 import inviteCode from './requestData/InviteCode'
 import bookClassify from './requestData/BookClassify'
+import profile from './requestData/Profile'
 
 export const service = {
   auth,
@@ -20,5 +21,6 @@ export const service = {
   log,
   resetPassword,
   inviteCode,
-  bookClassify
+  bookClassify,
+  profile
 }
