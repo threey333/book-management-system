@@ -10,7 +10,7 @@
         <!-- 登录 -->
         <a-tab-pane key="login" tab="登入">
           <div class="auth-wrapper-form-item">
-            <a-input size="large" placeholder="账户" v-model:value="loginForm.account">
+            <a-input size="large" placeholder="账户 (admin)" v-model:value="loginForm.account">
               <!-- 插槽 -->
               <template #prefix>
                 <UserOutlined />
@@ -18,7 +18,7 @@
             </a-input>
           </div>
           <div class="auth-wrapper-form-item">
-            <a-input size="large" placeholder="密码" v-model:value="loginForm.password">
+            <a-input size="large" placeholder="密码 (admin)" v-model:value="loginForm.password">
               <template #prefix>
                 <LockOutlined />
               </template>
@@ -127,10 +127,11 @@ export default defineComponent({
       }
       const res = await $service.auth.login(loginForm)
       result(res)
-        .success((msg, { data: { user, token } }) => {
+        .success(async (msg, { data: { user, token } }) => {
           loginForm.account = ''
           loginForm.password = ''
 
+          await store.dispatch('getCharacterInfo')
           store.commit('setUserInfo', user)
           store.commit('setUserCharacter', getCharacterInfoById(user.character))
           setToken(token)

@@ -4,9 +4,9 @@ import { result, getCharacterInfoById } from '@/utils'
 
 export default createStore({
   state: {
-    characterInfo: [],
-    userInfo: {},
-    userCharacter: {}
+    characterInfo: [], // 角色信息
+    userInfo: {}, // 用户信息
+    userCharacter: {} // 用户的角色信息
   },
   mutations: {
     setCharacterInfo (state, characterInfo) {
@@ -20,6 +20,7 @@ export default createStore({
     }
   },
   actions: {
+    // 获取角色权限信息
     async getCharacterInfo (ctx) {
       const res = await service.character.getCharacterList()
       result(res)
@@ -27,10 +28,13 @@ export default createStore({
           ctx.commit('setCharacterInfo', data)
         })
     },
+
+    // 获取用户信息
     async getUserInfo (ctx) {
       const res = await service.user.getUserInfo()
       result(res)
         .success((msg, { data }) => {
+          console.log(data)
           ctx.commit('setUserInfo', data)
           ctx.commit('setUserCharacter', getCharacterInfoById(data.character))
         })

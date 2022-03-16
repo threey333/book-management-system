@@ -1,6 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import store from '../store'
-import { service } from '@/service'
+// import { service } from '@/service'
 import { message } from 'ant-design-vue'
 
 const routes = [
@@ -29,6 +29,11 @@ const routes = [
         path: 'user',
         name: 'User',
         component: () => import(/* webpackChunkName: "User" */ '@/views/Users/index.vue')
+      },
+      {
+        path: 'log',
+        name: 'Log',
+        component: () => import(/* webpackChunkName: "Log" */ '@/views/Log/index.vue')
       }
     ]
   }
@@ -50,24 +55,34 @@ router.beforeEach(async (to, from, next) => {
     return
   }
   try {
-    await service.user.getUserInfo()
+    const reqArr = []
+    // 1.先获取角色权限信息和用户的信息
+    if (!store.state.characterInfo.length) {
+      reqArr.push(store.dispatch('getCharacterInfo'))
+    }
+    if (!store.state.userInfo.account) {
+      reqArr.push(store.dispatch('getUserInfo'))
+    }
+    await Promise.all(reqArr)
+    console.log(store)
+
+    // await service.user.getUserInfo()
+    // console.log(res)
   } catch (error) {
-    console.log(error.message)
     if (error.message.includes('未授权，请登录')) {
-      console.log(2222222)
       message.error('认证失败，请重新登录')
       next('/auth')
       return
     }
   }
-
-  if (!store.state.characterInfo.length) {
-    await store.dispatch('getCharacterInfo')
-  }
-  console.log(store)
-
-  await store.dispatch('getUserInfo')
   next()
+
+  // if (!store.state.characterInfo.length) {
+  //   await store.dispatch('getCharacterInfo')
+  // }
+  // console.log(store)
+
+  // await store.dispatch('getUserInfo')
 })
 
 export default router

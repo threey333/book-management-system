@@ -37,6 +37,7 @@ const middleware = (app) => {
     path: [
       /^\/auth\/login/,
       /^\/auth\/register/,
+      /^\/character\/list/,
       /^\/forget-password\/add/,
     ],
   }))

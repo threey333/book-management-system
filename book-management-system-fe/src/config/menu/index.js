@@ -1,10 +1,20 @@
+/**
+ * onlyAdmin字段为true，说明只有角色是管理员身份才能看得到
+*/
 export default [
   {
     title: '书籍管理',
-    url: '/books'
+    url: '/books',
+    onlyAdmin: false
   },
   {
     title: '用户管理',
-    url: '/user'
+    url: '/user',
+    onlyAdmin: true
+  },
+  {
+    title: '日志操作',
+    url: '/log',
+    onlyAdmin: true
   }
 ]

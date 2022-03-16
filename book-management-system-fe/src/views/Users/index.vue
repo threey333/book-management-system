@@ -73,7 +73,6 @@
 
 <script>
 import { defineComponent, ref, onMounted, reactive } from 'vue'
-import FlexEnd from '@/components/flex-end'
 import { vueProperties, result, formatTimestamp, getCharacterInfoById } from '@/utils'
 import { message } from 'ant-design-vue'
 import AddOne from './components/add-one.vue'
@@ -115,7 +114,6 @@ const columns = [
 export default defineComponent({
   name: 'Users',
   components: {
-    FlexEnd,
     AddOne,
     EditOutlined
   },

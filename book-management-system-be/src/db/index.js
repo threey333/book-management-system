@@ -1,9 +1,11 @@
-require('./schemas/User') // 执行User文件
-require('./schemas/InviteCode') // 执行InviteCode文件
-require('./schemas/Book') // 执行Book文件
-require('./schemas/InventoryLog') // 执行InventoryLog文件
-require('./schemas/Character')
-require('./schemas/Log')
+require('./Schemas/User') // 执行User文件
+require('./Schemas/InviteCode') // 执行InviteCode文件
+require('./Schemas/Book') // 执行Book文件
+require('./Schemas/InventoryLog') // 执行InventoryLog文件
+require('./Schemas/Character')
+require('./Schemas/Log')
+require('./Schemas/LogResponse')
+require('./Schemas/ForgetPassword')
 
 const mongoose = require('mongoose')
 
