@@ -6,6 +6,7 @@ export default createStore({
   state: {
     characterInfo: [], // 角色信息
     userInfo: {}, // 用户信息
+    bookClassify: [],
     userCharacter: {} // 用户的角色信息
   },
   mutations: {
@@ -17,9 +18,21 @@ export default createStore({
     },
     setUserCharacter (state, userCharacter) {
       state.userCharacter = userCharacter
+    },
+    setBookClassify (state, bookClassify) {
+      state.bookClassify = bookClassify
     }
   },
   actions: {
+    // 获取图书分类
+    async getBookClassify (ctx) {
+      const res = await service.bookClassify.bookClassifyList()
+      result(res)
+        .success((msg, { data }) => {
+          ctx.commit('setBookClassify', data)
+        })
+    },
+
     // 获取角色权限信息
     async getCharacterInfo (ctx) {
       const res = await service.character.getCharacterList()

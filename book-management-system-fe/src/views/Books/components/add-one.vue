@@ -17,7 +17,13 @@
             <a-date-picker v-model:value="formData.publishDate" />
           </a-form-item>
           <a-form-item label="分类">
-            <a-input v-model:value="formData.classify" />
+            <a-select v-model:value="formData.classify" style="width: 120px">
+              <a-select-option
+                v-for="item in store.bookClassify"
+                :key="item._id"
+                :value="item._id"
+              >{{ item.title }}</a-select-option>
+            </a-select>
           </a-form-item>
           <a-form-item label="库存">
             <a-input v-model:value="formData.count" />
@@ -32,6 +38,7 @@
 import { defineComponent, reactive } from 'vue'
 import { vueProperties, result, clone } from '@/utils'
 import { message } from 'ant-design-vue'
+import store from '@/store'
 
 const defaultFormData = {
   name: '',
@@ -54,6 +61,10 @@ export default defineComponent({
     const { $service } = vueProperties()
 
     const formData = reactive(clone(defaultFormData))
+    if (store.state.bookClassify.length) {
+      formData.classify = store.state.bookClassify[0]._id
+    }
+
     // 确认提交
     const submit = async () => {
       const cloneFormData = clone(formData)
@@ -63,7 +74,9 @@ export default defineComponent({
         .success((msg) => {
           Object.assign(formData, defaultFormData)
           message.success(msg)
-          // context.emit('update:show', false)
+
+          context.emit('getList')
+          close()
         })
     }
 
@@ -74,7 +87,8 @@ export default defineComponent({
     return {
       formData,
       submit,
-      close
+      close,
+      store: store.state
     }
   }
 })

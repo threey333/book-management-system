@@ -8,6 +8,8 @@ import user from './requestData/User'
 import character from './requestData/Character'
 import log from './requestData/Log'
 import resetPassword from './requestData/ResetPassword'
+import inviteCode from './requestData/InviteCode'
+import bookClassify from './requestData/BookClassify'
 
 export const service = {
   auth,
@@ -16,5 +18,7 @@ export const service = {
   user,
   character,
   log,
-  resetPassword
+  resetPassword,
+  inviteCode,
+  bookClassify
 }

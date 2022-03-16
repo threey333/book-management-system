@@ -13,13 +13,15 @@
           />
           <a v-if="isBack" href="javascript:;" @click="backAll">返回</a>
         </div>
-        <a-button @click="show = true">添加一条</a-button>
+        <a-button @click="show = true" type="primary">添加一条</a-button>
       </space-between>
       <a-divider />
 
       <!-- 表格 -->
       <a-table :columns="columns" :data-source="listData" :pagination="false" bordered>
         <template #publishDate="data">{{ formatTimestamp(data.record.publishDate) }}</template>
+
+        <template #classify="{ record }">{{ getClassifyTitleById(record.classify) }}</template>
         <template #count="data">
           <a href="javascript:;" @click="updateCount('IN_COUNT', data.record)">入库</a>
           {{ data.record.count }}
@@ -47,7 +49,7 @@
         />
       </space-between>
     </a-card>
-    <AddOne v-model:show="show" />
+    <AddOne v-model:show="show" @getList="getList" />
     <Update v-model:show="showUpdateDialog" :book="curEditBook" @update="updateCurBook"></Update>
   </div>
 </template>
@@ -60,6 +62,7 @@ import AddOne from './components/add-one.vue'
 import Update from './components/update.vue'
 import { message, Input } from 'ant-design-vue'
 import ElDialog from '@/components/dialog/index.vue'
+import { getClassifyTitleById } from '@/utils/book-classify'
 
 export default defineComponent({
   name: 'Books',
@@ -103,7 +106,10 @@ export default defineComponent({
       {
         title: '分类',
         key: 'classify',
-        dataIndex: 'classify'
+        dataIndex: 'classify',
+        slots: {
+          customRender: 'classify'
+        }
       },
       {
         title: '操作',
@@ -120,10 +126,11 @@ export default defineComponent({
     const listData = ref([]) // 图书列表数量
     const total = ref(0) // 图书类总条数
     const curPage = ref(1) // 当前页数
-    const pageSize = ref(4) // 当前页有多少条数据
+    const pageSize = ref(10) // 当前页有多少条数据
     const keyword = ref('') // 搜索的关键词
     const isBack = ref('')
 
+    // 获取图书列表数据
     const getList = async ({ page } = {}) => {
       const res = await $service.book.getList({
         page: page || curPage.value,
@@ -141,7 +148,7 @@ export default defineComponent({
       })
     }
 
-    onMounted(async () => {
+    onMounted(() => {
       getList()
     })
 
@@ -261,7 +268,9 @@ export default defineComponent({
       updateCount,
       update,
       updateCurBook,
-      toDetail
+      toDetail,
+      getClassifyTitleById,
+      getList
     }
   }
 })
