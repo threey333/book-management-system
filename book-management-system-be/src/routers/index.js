@@ -8,6 +8,8 @@ const log = require('./log')
 const forgetPassword = require('./forget-password')
 const bookClassify = require('./book-classify')
 const profile = require('./profile')
+const dashBorad = require('./dash-board')
+const upload = require('./upload')
 
 module.exports = (app) => {
   app.use(auth.routes())
@@ -20,4 +22,6 @@ module.exports = (app) => {
   app.use(forgetPassword.routes())
   app.use(bookClassify.routes())
   app.use(profile.routes())
+  app.use(dashBorad.routes())
+  app.use(upload.routes())
 }

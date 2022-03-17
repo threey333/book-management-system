@@ -13,11 +13,18 @@
           />
           <a v-if="isBack" href="javascript:;" @click="backAll">返回</a>
         </div>
-        <a-button
-          class="users-wrapper-action-addUser"
-          type="primary"
-          @click="showAddDialog = true"
-        >添加用户</a-button>
+        <div class="users-wrapper-actions-btn">
+          <a-button type="primary" @click="showAddDialog = true">添加用户</a-button>&nbsp;
+          <a-upload
+            @change="onUploadChange"
+            action="http://localhost:9090/upload/file"
+            :headers="headers"
+          >
+            <a-button type="primary" ghost>
+              <UploadOutlined />上次 Excel 添加
+            </a-button>
+          </a-upload>
+        </div>
       </space-between>
       <a-divider />
 
@@ -52,6 +59,7 @@
       </flex-end>
     </a-card>
     <AddOne v-model:show="showAddDialog" @getList="getUser" />
+
     <!-- 添加角色对话框 -->
     <el-dialog
       title="添加角色"
@@ -74,9 +82,11 @@
 <script>
 import { defineComponent, ref, onMounted, reactive } from 'vue'
 import { vueProperties, result, formatTimestamp, getCharacterInfoById } from '@/utils'
+import { UploadOutlined, EditOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import AddOne from './components/add-one.vue'
-import { EditOutlined } from '@ant-design/icons-vue'
+import { getHeaders } from '@/utils/request.js'
+
 import store from '@/store'
 
 const columns = [
@@ -115,7 +125,8 @@ export default defineComponent({
   name: 'Users',
   components: {
     AddOne,
-    EditOutlined
+    EditOutlined,
+    UploadOutlined
   },
   setup () {
     const { $service } = vueProperties()
@@ -157,9 +168,8 @@ export default defineComponent({
     const remove = async ({ _id }) => {
       const res = await $service.user.removeUser({ id: _id })
       result(res)
-        .success((msg, { data: { id: delId } }) => {
-          const delTargetIndex = list.value.findIndex(item => item._id === delId)
-          list.value.splice(delTargetIndex, 1)
+        .success((msg) => {
+          getUser()
           message.success(msg)
         })
     }
@@ -221,6 +231,23 @@ export default defineComponent({
       showEditCharacterDialog.value = false
     }
 
+    // 上传文件
+    const onUploadChange = ({ file }) => {
+      if (file.response) {
+        result(file.response)
+          .success(async (msg, { data: key }) => {
+            const res = await $service.user.addManyUser(key)
+
+            result(res)
+              .success((msg, { data: { addCount } }) => {
+                message.success(`成功添加 ${addCount} 位用户`)
+
+                getUser()
+              })
+          })
+      }
+    }
+
     return {
       list,
       curPage,
@@ -233,6 +260,7 @@ export default defineComponent({
       showEditCharacterDialog,
       editForm,
       characterInfo: store.state.characterInfo,
+      headers: getHeaders(),
 
       formatTimestamp,
       remove,
@@ -244,7 +272,8 @@ export default defineComponent({
       getCharacterInfoById,
       onEdit,
       submitUpdateCharacter,
-      closeEditCharacter
+      closeEditCharacter,
+      onUploadChange
     }
   }
 })
@@ -255,7 +284,6 @@ export default defineComponent({
 .users-wrapper {
   &-actions-search {
     display: inline-flex;
-    align-items: center;
     a {
       display: block;
       margin-left: 16px;

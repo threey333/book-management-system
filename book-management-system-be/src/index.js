@@ -15,7 +15,12 @@ connect().then(() => {
     origin: 'http://localhost:8080',
     credentials: true,
   }))
-  app.use(koaBody()) //处理请求体数据的方法
+  app.use(koaBody({
+    multipart: true,  //允许上传文件
+    formidable: {
+      maxFileSize: 200 * 1024 * 1024   //字段的最大大小
+    }
+  })) //处理请求体数据的方法
 
   app.use(catchTokenError)
 

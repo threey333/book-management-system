@@ -62,6 +62,16 @@ class Book {
     const url = `${this.bookURL}/detail/${id}`
     return await httpRequest({ url })
   }
+
+  // 上传文件
+  async addManyBook (key) {
+    const url = `${this.bookURL}/addMany`
+    const method = 'POST'
+    const data = {
+      key
+    }
+    return await httpRequest({ url, method, data })
+  }
 }
 
 export default new Book()

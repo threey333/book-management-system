@@ -1,24 +1,43 @@
 <template>
   <div class="books-wrapper">
-    <a-card>
-      <h2>图书列表</h2>
-      <a-divider />
-      <space-between class="books-wrapper-operation">
-        <div class="search">
-          <a-input-search
-            placeholder="根据书名搜索"
-            v-model:value="keyword"
-            enter-button
-            @search="onSearch"
-          />
-          <a v-if="isBack" href="javascript:;" @click="backAll">返回</a>
-        </div>
-        <a-button @click="show = true" type="primary">添加一条</a-button>
-      </space-between>
-      <a-divider />
+    <a-card :title="simple ? '最近添加的图书' : ''" :headStyle="cartHeadTitle">
+      <template v-if="!simple">
+        <h2>图书列表</h2>
+        <a-divider />
+        <space-between class="books-wrapper-operation">
+          <div class="search">
+            <a-input-search
+              placeholder="根据书名搜索"
+              v-model:value="keyword"
+              enter-button
+              @search="onSearch"
+            />
+            <a v-if="isBack" href="javascript:;" @click="backAll">返回</a>
+          </div>
+          <div class="actions">
+            <a-button @click="show = true" type="primary">添加一条</a-button>&nbsp;
+            <a-upload
+              @change="onUploadChange"
+              action="http://localhost:9090/upload/file"
+              :headers="headers"
+            >
+              <a-button type="primary" ghost>
+                <UploadOutlined />上次 Excel 添加
+              </a-button>
+            </a-upload>
+          </div>
+        </space-between>
+        <a-divider />
+      </template>
 
       <!-- 表格 -->
-      <a-table :columns="columns" :data-source="listData" :pagination="false" bordered>
+      <a-table
+        :columns="columns"
+        :data-source="listData"
+        :pagination="false"
+        bordered
+        :scroll="{ x: 'max-content' }"
+      >
         <template #publishDate="data">{{ formatTimestamp(data.record.publishDate) }}</template>
 
         <template #classify="{ record }">{{ getClassifyTitleById(record.classify) }}</template>
@@ -30,7 +49,7 @@
             @click="updateCount('OUT_COUNT', data.record)"
           >出库</a>
         </template>
-        <template #actions="data">
+        <template #actions="data" v-if="!simple">
           <a href="javascript:;" @click="toDetail(data)">详情</a>
           &nbsp;
           <a href="javascript:;" @click="update(data)">编辑</a>
@@ -38,8 +57,7 @@
           <a href="javascript:;" @click="removeItem(data)">删除</a>
         </template>
       </a-table>
-      <space-between class="books-wrapper-pagination">
-        <div />
+      <flex-end class="books-wrapper-pagination" v-if="!simple">
         <!-- 分页 -->
         <a-pagination
           v-model:current="curPage"
@@ -47,7 +65,7 @@
           :total="total"
           @change="setCurPage"
         />
-      </space-between>
+      </flex-end>
     </a-card>
     <AddOne v-model:show="show" @getList="getList" />
     <Update v-model:show="showUpdateDialog" :book="curEditBook" @update="updateCurBook"></Update>
@@ -58,19 +76,32 @@
 import { defineComponent, ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { vueProperties, result, formatTimestamp } from '@/utils'
+import { UploadOutlined } from '@ant-design/icons-vue'
 import AddOne from './components/add-one.vue'
 import Update from './components/update.vue'
 import { message, Input } from 'ant-design-vue'
 import ElDialog from '@/components/dialog/index.vue'
 import { getClassifyTitleById } from '@/utils/book-classify'
+import { getHeaders } from '@/utils/request.js'
 
 export default defineComponent({
   name: 'Books',
   components: {
     AddOne,
-    Update
+    Update,
+    UploadOutlined
   },
-  setup () {
+  props: {
+    simple: Boolean
+  },
+  setup (props) {
+    // 设置title样式
+    const cartHeadTitle = ref({
+      'font-weight': 'bold',
+      'font-size': '24px',
+      'text-align': 'left'
+    })
+
     const columns = [
       {
         title: '书名',
@@ -110,16 +141,9 @@ export default defineComponent({
         slots: {
           customRender: 'classify'
         }
-      },
-      {
-        title: '操作',
-        key: 'actions',
-        dataIndex: 'actions',
-        slots: {
-          customRender: 'actions'
-        }
       }
     ]
+
     const { $service } = vueProperties()
     const show = ref(false)
     const showUpdateDialog = ref(false)
@@ -129,6 +153,17 @@ export default defineComponent({
     const pageSize = ref(10) // 当前页有多少条数据
     const keyword = ref('') // 搜索的关键词
     const isBack = ref('')
+
+    if (!props.simple) {
+      columns.push({
+        title: '操作',
+        key: 'actions',
+        dataIndex: 'actions',
+        slots: {
+          customRender: 'actions'
+        }
+      })
+    }
 
     // 获取图书列表数据
     const getList = async ({ page } = {}) => {
@@ -247,9 +282,26 @@ export default defineComponent({
       console.log(router)
       router.push(`/books/${_id}`)
     }
+    // 上传文件
+    const onUploadChange = ({ file }) => {
+      if (file.response) {
+        result(file.response)
+          .success(async (msg, { data: key }) => {
+            const res = await $service.book.addManyBook(key)
+
+            result(res)
+              .success((msg, { data: { addCount } }) => {
+                message.success(`成功添加 ${addCount} 本书籍`)
+
+                getList()
+              })
+          })
+      }
+    }
 
     return {
       columns,
+      cartHeadTitle,
       show,
       listData,
       formatTimestamp,
@@ -260,6 +312,7 @@ export default defineComponent({
       isBack,
       showUpdateDialog,
       curEditBook,
+      headers: getHeaders(),
 
       setCurPage,
       onSearch,
@@ -270,7 +323,8 @@ export default defineComponent({
       updateCurBook,
       toDetail,
       getClassifyTitleById,
-      getList
+      getList,
+      onUploadChange
     }
   }
 })

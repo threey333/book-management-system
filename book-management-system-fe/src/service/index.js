@@ -11,6 +11,7 @@ import resetPassword from './requestData/ResetPassword'
 import inviteCode from './requestData/InviteCode'
 import bookClassify from './requestData/BookClassify'
 import profile from './requestData/Profile'
+import dashBoard from './requestData/DashBoard'
 
 export const service = {
   auth,
@@ -22,5 +23,6 @@ export const service = {
   resetPassword,
   inviteCode,
   bookClassify,
-  profile
+  profile,
+  dashBoard
 }

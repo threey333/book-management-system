@@ -13,7 +13,8 @@ import {
   Pagination,
   Select,
   Menu,
-  Spin
+  Spin,
+  Upload
 } from 'ant-design-vue'
 import AntUI from '@/plugins/ant-design-ui'
 
@@ -38,6 +39,7 @@ app.use(AntUI)
   .use(Select)
   .use(Menu)
   .use(Spin)
+  .use(Upload)
 // 注册全局组件
 app.component('space-between', SpaceBetween)
 app.component('el-dialog', ElDialog)

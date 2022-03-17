@@ -2,9 +2,12 @@ const Router = require('@koa/router')
 const mongoose = require('mongoose')
 const { getBody } = require('../../common/utils')
 const { BOOK_CONST } = require('../../common/constant')
+const config = require('../../project-config')
+const { loadExcel, getFirstSheet } = require('../../common/excel')
 
 const Book = mongoose.model('Book')  //创建一个books集合构造函数
 const InventoryLog = mongoose.model('InventoryLog') // 创建一个库存集合的构造函数
+const BookClassify = mongoose.model('BookClassify')
 
 const findBookOne = async (id) => {
   const one = await Book.findOne({
@@ -190,7 +193,53 @@ router.get('/detail/:id', async (ctx, next) => {
     data: one,
     msg: '查询成功'
   }
+})
 
+
+// 文件中的数据保存到对应的集合文档中
+router.post('/addMany', async (ctx, next) => {
+  const { key = '' } = getBody(ctx)
+  const path = `${config.UPLOAD_DIR}/${key}` // 上传的文件路径
+
+  const excel = loadExcel(path) // 获取该xlsx文件中的所有sheet
+  const sheetData = getFirstSheet(excel) //获取第一个sheet中的数据
+  const { length } = sheetData //表中数据的大小
+
+  const insertData = [] // 插入多个用户
+  for (let i = 0; i < length; i++) {
+    const data = sheetData[i]
+    const [name, auth, price, publishDate, classify, count] = data
+
+    let classifyID = classify
+    let price_number = Number(price)
+    let count_number = Number(count)
+
+    // 从 BookClassify 中查找是否有该分类
+    const one = await BookClassify.findOne({
+      title: classify
+    }).exec()
+
+    if (one) {
+      classifyID = one._id
+    }
+    insertData.push({
+      name,
+      price: price_number,
+      auth,
+      publishDate,
+      classify: classifyID,
+      count: count_number
+    })
+  }
+  await Book.insertMany(insertData)
+
+  ctx.response.body = {
+    code: 1,
+    msg: '添加书籍成功',
+    data: {
+      addCount: insertData.length,
+    },
+  }
 })
 
 module.exports = router

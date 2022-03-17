@@ -4,6 +4,7 @@ const getStorageKey = (key) => `book_management_system_${key}`
 
 const TOKEN_STORAGE_KEY = getStorageKey('token')
 
+// 获取token
 export const getToken = () => {
   return storage.get(TOKEN_STORAGE_KEY) || ''
 }

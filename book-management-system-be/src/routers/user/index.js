@@ -5,6 +5,7 @@ const config = require('../../project-config')
 
 const { getBody } = require('../../common/utils')
 const { verify, getToken } = require('../../common/token')
+const { loadExcel, getFirstSheet } = require('../../common/excel')
 
 const User = mongoose.model('User')  // 获取users集合
 const Character = mongoose.model('Character') // 获取character集合
@@ -184,6 +185,51 @@ router.get('/info', async (ctx, next) => {
     code: 1,
     msg: '获取成功',
     data: await verify(token),
+  }
+})
+
+
+// 文件中的数据保存到对应的集合文档中
+router.post('/addMany', async (ctx, next) => {
+  const { key = '' } = getBody(ctx)
+  const path = `${config.UPLOAD_DIR}/${key}` // 上传的文件路径
+
+  const excel = loadExcel(path) // 获取该xlsx文件中的所有sheet
+  const sheetData = getFirstSheet(excel) //获取第一个sheet中的数据
+  const { length } = sheetData //表中数据的大小
+
+  // 从数据库中获取所有角色数据
+  const character = await Character.find({}).exec()
+  console.log(character)
+
+  // 从角色中获取 name 是 member的文档数据
+  const memberData = character.find(item => item.name === 'member')
+
+  const insertData = [] // 插入多个用户
+  for (let i = 0; i < length; i++) {
+    const data = sheetData[i]
+    const [account, password = config.DEFAULT_PASSWORD] = data
+
+    // 从User集合中查找是否有该用户的数据
+    const one = await User.findOne({
+      account
+    }).exec()
+
+    if (one) continue // 如果存在,则跳过
+    insertData.push({
+      account,
+      password,
+      character: memberData._id
+    })
+  }
+  await User.insertMany(insertData)
+
+  ctx.response.body = {
+    code: 1,
+    msg: '添加账户成功',
+    data: {
+      addCount: insertData.length,
+    },
   }
 })
 
