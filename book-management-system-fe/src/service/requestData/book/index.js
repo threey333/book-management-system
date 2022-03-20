@@ -1,8 +1,9 @@
 import httpRequest from '../../config'
+import { domain } from '../../utils'
 
 class Book {
   constructor () {
-    this.bookURL = 'http://localhost:9090/book'
+    this.bookURL = `${domain}/book`
   }
 
   // 添加书籍

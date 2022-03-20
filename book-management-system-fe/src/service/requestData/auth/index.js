@@ -1,8 +1,8 @@
 import httpRequest from '../../config'
-// import { handleLearningRequest } from '../../utils'
+import { domain } from '../../utils'
 class Auth {
   constructor () {
-    this.authURL = 'http://localhost:9090/auth'
+    this.authURL = `${domain}/auth`
     this.withCredentials = true
   }
 

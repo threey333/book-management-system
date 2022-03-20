@@ -2,7 +2,7 @@ const Koa = require('koa')
 const koaBody = require('koa-body')
 const { connect } = require('./db')
 const registerRoutes = require('./routers')
-const { middleware: jwtMiddleware, catchTokenError } = require('./common/token')
+const { middleware: jwtMiddleware, catchTokenError, checkUser } = require('./common/token')
 const { logMiddleware } = require('./common/log')
 
 const cors = require('@koa/cors')
@@ -24,9 +24,11 @@ connect().then(() => {
 
   app.use(catchTokenError)
 
-  app.use(logMiddleware)
-
   jwtMiddleware(app)
+
+  app.use(checkUser)
+
+  app.use(logMiddleware)
 
   /**
    * 注册路由

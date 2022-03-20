@@ -132,10 +132,12 @@ export default defineComponent({
           loginForm.account = ''
           loginForm.password = ''
 
+          setToken(token)
+
           await store.dispatch('getCharacterInfo')
+
           store.commit('setUserInfo', user)
           store.commit('setUserCharacter', getCharacterInfoById(user.character))
-          setToken(token)
 
           router.replace('/books')
           message.success(msg)

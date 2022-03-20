@@ -1,8 +1,9 @@
 import httpRequest from '../../config'
+import { domain } from '../../utils'
 
 class User {
   constructor () {
-    this.userURL = 'http://localhost:9090/user'
+    this.userURL = `${domain}/user`
   }
 
   async getUserList ({ page, size, keyword = '' }) {

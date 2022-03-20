@@ -10,3 +10,5 @@ export const handleLearningRequest = (result) => {
   }
   return { error: result.message }
 }
+
+export const domain = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:9090'

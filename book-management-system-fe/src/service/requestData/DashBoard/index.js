@@ -1,8 +1,8 @@
 import httpRequest from '../../config'
-
+import { domain } from '../../utils'
 class DashBoard {
   constructor () {
-    this.InviteCodeURL = 'http://localhost:9090/dashBoard'
+    this.InviteCodeURL = `${domain}/dashBoard`
   }
 
   async baseInfo () {

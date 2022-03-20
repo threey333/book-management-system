@@ -1,8 +1,8 @@
 import httpRequest from '../../config'
-
+import { domain } from '../../utils'
 class ResetPassword {
   constructor () {
-    this.resetPasswordURL = 'http://localhost:9090/reset-password'
+    this.resetPasswordURL = `${domain}/reset-password`
   }
 
   async getResetPWDList ({ page, size }) {

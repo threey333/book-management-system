@@ -1,8 +1,9 @@
 import httpRequest from '../../config'
+import { domain } from '../../utils'
 
 class Profile {
   constructor () {
-    this.profileURL = 'http://localhost:9090/profile'
+    this.profileURL = `${domain}/profile`
   }
 
   //

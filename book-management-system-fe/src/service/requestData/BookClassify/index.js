@@ -1,8 +1,8 @@
 import httpRequest from '../../config'
-
+import { domain } from '../../utils'
 class BookClassify {
   constructor () {
-    this.bookclassifyURL = 'http://localhost:9090/book-classify'
+    this.bookclassifyURL = `${domain}/book-classify`
   }
 
   // 获取图书分类列表

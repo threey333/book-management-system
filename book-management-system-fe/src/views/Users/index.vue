@@ -132,7 +132,7 @@ export default defineComponent({
     const { $service } = vueProperties()
     const list = ref([]) // 用户列表
     const curPage = ref(1) // 分页默认是第一页
-    const size = ref(4) // 每页默认显示大小为10条
+    const size = ref(10) // 每页默认显示大小为10条
     const userTotal = ref(0)
     const showAddDialog = ref(false)
     const keyword = ref('') // 账户关键字

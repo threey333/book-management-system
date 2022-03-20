@@ -1,8 +1,9 @@
 import httpRequest from '../../config'
+import { domain } from '../../utils'
 
 class Character {
   constructor () {
-    this.character = 'http://localhost:9090/character'
+    this.character = `${domain}/character`
   }
 
   // 获取权限列表数据

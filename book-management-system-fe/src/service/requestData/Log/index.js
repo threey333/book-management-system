@@ -1,8 +1,8 @@
 import httpRequest from '../../config'
-
+import { domain } from '../../utils'
 class Log {
   constructor () {
-    this.logURL = 'http://localhost:9090/log'
+    this.logURL = `${domain}/log`
   }
 
   async getLogList ({ page, size }) {

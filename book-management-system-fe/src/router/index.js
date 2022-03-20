@@ -75,18 +75,23 @@ const isAuthPath = (to) => {
 }
 
 router.beforeEach(async (to, from, next) => {
-  if (isAuthPath(to)) {
-    next()
-    return
-  }
+  const res = {}
   try {
     await service.user.getUserInfo()
   } catch (error) {
     if (error.message.includes('未授权，请登录')) {
-      message.error('认证失败，请重新登录')
-      next('/auth')
+      res.code = 401
+    }
+  }
+  const { code } = res
+  if (code === 401) {
+    if (to.path === '/auth') {
+      next()
       return
     }
+    message.error('认证失败，请重新登录')
+    next('/auth')
+    return
   }
 
   // 1.先获取角色权限信息
@@ -101,8 +106,14 @@ router.beforeEach(async (to, from, next) => {
   if (!store.state.bookClassify.length) {
     reqArr.push(store.dispatch('getBookClassify'))
   }
+
   await Promise.all(reqArr)
   console.log(store)
+
+  if (isAuthPath(to)) {
+    next('/books')
+    return
+  }
 
   next()
 })

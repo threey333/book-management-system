@@ -6,8 +6,8 @@
         <span>图书管理系统</span>
       </div>
       <div class="default-layout-header-right">
-        <span class="default-layout-header-right-message">你好，xxx</span>
-        <button class="el-btn el-btn-primary btn">退出</button>
+        <span class="default-layout-header-right-message">你好，{{ store.userInfo.account }}</span>
+        <button class="el-btn el-btn-primary btn" @click="logout">退出</button>
       </div>
     </div>
     <div class="default-layout-placeholder"></div>
@@ -25,10 +25,24 @@
 <script>
 import { defineComponent } from 'vue'
 import LayoutLeftNav from '@/components/layout-left-nav'
+import { setToken } from '@/utils/token.js'
+import store from '@/store'
 
 export default defineComponent({
   components: {
     LayoutLeftNav
+  },
+  setup () {
+    const logout = () => {
+      setToken('')
+
+      window.location.href = '/'
+    }
+    return {
+      logout,
+
+      store: store.state
+    }
   }
 })
 
@@ -69,6 +83,9 @@ export default defineComponent({
       display: flex;
       align-items: center;
       height: 100%;
+      &-message {
+        font-size: 16px;
+      }
       .btn {
         margin-left: 16px;
         padding: 4px 15px;

@@ -1,8 +1,9 @@
 import httpRequest from '../../config'
+import { domain } from '../../utils'
 // import { handleLearningRequest } from '../../utils'
 class InventoryLog {
   constructor () {
-    this.authURL = 'http://localhost:9090/inventory-log'
+    this.authURL = `${domain}/inventory-log`
   }
 
   // 获取出入库日志数据

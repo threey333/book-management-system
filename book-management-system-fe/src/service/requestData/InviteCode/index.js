@@ -1,8 +1,8 @@
 import httpRequest from '../../config'
-
+import { domain } from '../../utils'
 class InviteCode {
   constructor () {
-    this.InviteCodeURL = 'http://localhost:9090/invite'
+    this.InviteCodeURL = `${domain}/invite`
   }
 
   async inviteCodeList ({ page, size } = {}) {
