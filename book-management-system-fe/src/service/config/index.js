@@ -74,7 +74,7 @@ export default function $axios (config = {}) {
           // 一般情况下都是未登录，此时在这里写路由跳转到登录页。
           break
         case 403:
-          // 一般情况下是TOKEN过期
+          // 一般情况下是TOKEN已经过期
           error.message = 'TOKEN过期'
           localStorage.removeItem('token')
           // TODO 调整到登录页
