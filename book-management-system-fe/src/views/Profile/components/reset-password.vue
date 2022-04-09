@@ -1,18 +1,40 @@
 <template>
-  <a-card title="修改密码" :headStyle="cartHeadTitle">
-    <a-form :model="form" :label-col="{ span: 2 }" :wrapper-col="{ span: 8 }">
+  <a-card
+    title="修改密码"
+    :headStyle="cartHeadTitle"
+  >
+    <a-form
+      :model="form"
+      :label-col="{ span: 2 }"
+      :wrapper-col="{ span: 8 }"
+    >
       <a-form-item label="原始密码">
-        <a-input type="password" v-model:value="form.oldPassword" />
+        <a-input
+          type="password"
+          v-model:value="form.oldPassword"/>
       </a-form-item>
       <a-form-item label="新密码">
-        <a-input type="password" v-model:value="form.newPassword" />
+        <a-input
+          type="password"
+          v-model:value="form.newPassword"
+        />
       </a-form-item>
       <a-form-item label="确认新密码">
-        <a-input type="password" v-model:value="form.confirmNewPassword" />
+        <a-input
+          type="password"
+          v-model:value="form.confirmNewPassword"
+        />
 
         <div style="margin-top: 24px;">
-          <a-button @click="resetPassword" type="primary">确认修改</a-button>&nbsp;&nbsp;
-          <a-button @click="clear" type="primary" ghost>清除所有</a-button>
+          <a-button
+            @click="resetPassword"
+            type="primary"
+          >确认修改</a-button>&nbsp;&nbsp;
+          <a-button
+            @click="clear"
+            type="primary"
+            ghost
+          >清除所有</a-button>
         </div>
       </a-form-item>
     </a-form>

@@ -7,6 +7,7 @@
 <script>
 import { defineComponent } from 'vue'
 import ResetPassword from './components/reset-password.vue'
+
 export default defineComponent({
   name: 'Profile',
   components: {

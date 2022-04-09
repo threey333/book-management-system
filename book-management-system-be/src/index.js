@@ -4,6 +4,7 @@ const { connect } = require('./db')
 const registerRoutes = require('./routers')
 const { middleware: jwtMiddleware, catchTokenError, checkUser } = require('./common/token')
 const { logMiddleware } = require('./common/log')
+const { SERVER_PORT } = require('./project-config')
 
 const cors = require('@koa/cors')
 
@@ -36,7 +37,7 @@ connect().then(() => {
   */
   registerRoutes(app)
 
-  app.listen(9090, () => {
-    console.log('服务启动成功: http://localhost:9090')
+  app.listen(SERVER_PORT, () => {
+    console.log(`服务启动成功: http://localhost:${SERVER_PORT}`)
   })
 })

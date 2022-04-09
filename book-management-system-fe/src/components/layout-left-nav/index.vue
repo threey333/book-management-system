@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { defineComponent, ref, onMounted, reactive } from 'vue'
+import { defineComponent, ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 
 import menu from '@/config/menu'
@@ -34,23 +34,27 @@ import menu from '@/config/menu'
 export default defineComponent({
   name: 'LayoutLeftNav',
   setup () {
-    const openKeys = reactive([]) // 收集subMenu菜单项 key 数组
+    const openKeys = ref(['杂项']) // 收集subMenu菜单项 key 数组
     const selectedKeys = ref([]) // 当前选中的菜单项 key 数组
     const router = useRouter() // 获取路由跳转的相关信息
     const route = useRoute() // 获取路由的相关信息
 
     onMounted(() => {
       selectedKeys.value = [route.path]
+      const paths = ['/reset/password', '/invite-code', '/book-classify']
+      if (!paths.includes(route.path)) {
+        openKeys.value = []
+      }
 
-      menu.forEach(item => {
-        (item.children || []).forEach(child => {
-          if (child.url === route.path) {
-            console.log(child.url, route.path)
-            openKeys.push('杂项')
-            console.log(openKeys)
-          }
-        })
-      })
+      // menu.forEach(item => {
+      //   (item.children || []).forEach(child => {
+      //     if (child.url === route.path) {
+      //       console.log(child.url, route.path)
+      //       openKeys.push('杂项')
+      //       console.log(openKeys)
+      //     }
+      //   })
+      // })
     })
 
     // 跳转地址
