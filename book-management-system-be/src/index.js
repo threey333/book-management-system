@@ -17,7 +17,7 @@ app.use(koaStatic(path.resolve(__dirname, '../public')))
 connect().then(() => {
   // 处理跨域
   app.use(cors({
-    origin: 'http://localhost:8080',
+    origin: `http://localhost:8080`,
     credentials: true,
   }))
   app.use(koaBody({
@@ -42,6 +42,6 @@ connect().then(() => {
   registerRoutes(app)
 
   app.listen(SERVER_PORT, () => {
-    console.log(`服务启动成功: http://localhost:${SERVER_PORT}`)
+    console.log(`服务启动成功`)
   })
 })
