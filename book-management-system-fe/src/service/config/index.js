@@ -82,7 +82,7 @@ export default function $axios (config = {}) {
         case 404:
           console.dir(error)
           error.message = `请求地址不存在: ${error.response.config.url}`
-          // 一般情况下都是地址不存在。
+          // 一般情况下都是地址不存在。sdasdas
           break
         case 500:
           error.message = '服务器内部错误'
