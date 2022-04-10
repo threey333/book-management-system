@@ -11,4 +11,4 @@ export const handleLearningRequest = (result) => {
   return { error: result.message }
 }
 
-export const domain = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:3000'
+export const domain = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:3000' // 如果是生成环境之间去掉前缀
