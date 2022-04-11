@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon ./src/index.js"
+    "dev": "nodemon ./src/index.js",
+    "serve": "node src/index.js",
+    "start": "pm2 start pnpm --name book-management -- run serve",
+    "stop": "pm2 stop book-management"
   },
   "keywords": [
     "毕业设计"
@@ -22,9 +25,7 @@
     "koa-static": "^5.0.0",
     "mongoose": "^5.10.11",
     "node-xlsx": "^0.21.0",
+    "pm2": "4.5.0",
     "uuid": "^8.3.2"
-  },
-  "devDependencies": {
-    "pm2": "^5.2.0"
   }
 }

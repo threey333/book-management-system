@@ -1,0 +1,23 @@
+{
+  "name": "book-management-system",
+  "version": "1.0.0",
+  "description": "图书后台管理系统",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start":"cd ./book-management-system-fe && pnpm run build && cd ../book-management-system-be && pnpm start",
+    "stop":"cd book-management-system-be && pnpm run stop",
+    "service":"cd book-management-system-be && pnpm run start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/threey333/book-management-system.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/threey333/book-management-system/issues"
+  },
+  "homepage": "https://github.com/threey333/book-management-system#readme"
+}
