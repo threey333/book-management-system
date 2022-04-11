@@ -1,6 +1,8 @@
 const webpack = require('webpack')
+const path = require('path')
 module.exports = {
   assetsDir: 'static', // 放置静态资源的目录
+  outputDir: path.resolve(__dirname, '../book-management-system-be/public'),
   css: {
     // requireModuleExtension: true,
     loaderOptions: {

@@ -1,4 +1,5 @@
 book-management-system-be/node_modules
 book-management-system-be/test
 book-management-system-be/upload/*
+book-management-system-be/public
 book-management-system-fe/node_modules
